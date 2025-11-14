@@ -6,6 +6,7 @@ using Masroof.Ecommerce.Addresses;
 using Masroof.Ecommerce.Orders;
 using Masroof.Ecommerce.Payments;
 using Masroof.Ecommerce.ShoppingCarts;
+using Masroof.Ecommerce.Coupons;
 
 namespace Masroof.Ecommerce;
 
@@ -68,5 +69,13 @@ public class EcommerceApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.IsEmpty, opt => opt.MapFrom(src => src.IsEmpty()));
         CreateMap<CartItem, CartItemDto>()
             .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.GetTotalPrice()));
+
+        // Coupon
+        CreateMap<Coupon, CouponDto>()
+            .ForMember(dest => dest.IsExpired, opt => opt.MapFrom(src => src.ValidTo < System.DateTime.UtcNow))
+            .ForMember(dest => dest.RemainingUses, opt => opt.MapFrom(src => src.MaxUsageCount.HasValue ? src.MaxUsageCount.Value - src.UsageCount : int.MaxValue));
+        CreateMap<CreateUpdateCouponDto, Coupon>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.UsageCount, opt => opt.Ignore());
     }
 }

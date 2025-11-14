@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Masroof.Ecommerce.Customers;
 using Masroof.Ecommerce.Products;
+using Masroof.Ecommerce.Coupons;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -17,17 +18,20 @@ public class ShoppingCartAppService : ApplicationService, IShoppingCartAppServic
     private readonly IRepository<ShoppingCart, Guid> _cartRepository;
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<Product, Guid> _productRepository;
+    private readonly IRepository<Coupon, Guid> _couponRepository;
     private readonly ICurrentUser _currentUser;
 
     public ShoppingCartAppService(
         IRepository<ShoppingCart, Guid> cartRepository,
         IRepository<Customer, Guid> customerRepository,
         IRepository<Product, Guid> productRepository,
+        IRepository<Coupon, Guid> couponRepository,
         ICurrentUser currentUser)
     {
         _cartRepository = cartRepository;
         _customerRepository = customerRepository;
         _productRepository = productRepository;
+        _couponRepository = couponRepository;
         _currentUser = currentUser;
     }
 
@@ -122,11 +126,30 @@ public class ShoppingCartAppService : ApplicationService, IShoppingCartAppServic
         var customer = await GetCurrentCustomerAsync();
         var cart = await GetOrCreateCartAsync(customer.Id);
 
-        // TODO: Implement coupon validation
-        // For now, apply a fixed 10% discount as example
-        var discountAmount = cart.GetSubTotal() * 0.10m;
+        // Find the coupon
+        var coupon = await _couponRepository.FirstOrDefaultAsync(c => c.Code == input.CouponCode);
 
+        if (coupon == null)
+        {
+            throw new UserFriendlyException("Invalid coupon code");
+        }
+
+        // Validate the coupon
+        var orderAmount = cart.GetSubTotal();
+        if (!coupon.IsValid(orderAmount, out var errorMessage))
+        {
+            throw new UserFriendlyException(errorMessage ?? "Invalid coupon");
+        }
+
+        // Calculate discount
+        var discountAmount = coupon.CalculateDiscount(orderAmount);
+
+        // Apply coupon to cart
         cart.ApplyCoupon(input.CouponCode, discountAmount);
+
+        // Increment coupon usage count
+        coupon.IncrementUsageCount();
+        await _couponRepository.UpdateAsync(coupon);
 
         await _cartRepository.UpdateAsync(cart, autoSave: true);
 

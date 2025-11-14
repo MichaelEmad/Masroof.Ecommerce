@@ -51,6 +51,12 @@ public class EcommercePermissionDefinitionProvider : PermissionDefinitionProvide
         addressesPermission.AddChild(EcommercePermissions.Addresses.Create, L("Permission:Addresses.Create"));
         addressesPermission.AddChild(EcommercePermissions.Addresses.Edit, L("Permission:Addresses.Edit"));
         addressesPermission.AddChild(EcommercePermissions.Addresses.Delete, L("Permission:Addresses.Delete"));
+
+        // Coupons
+        var couponsPermission = myGroup.AddPermission(EcommercePermissions.Coupons.Default, L("Permission:Coupons"));
+        couponsPermission.AddChild(EcommercePermissions.Coupons.Create, L("Permission:Coupons.Create"));
+        couponsPermission.AddChild(EcommercePermissions.Coupons.Edit, L("Permission:Coupons.Edit"));
+        couponsPermission.AddChild(EcommercePermissions.Coupons.Delete, L("Permission:Coupons.Delete"));
     }
 
     private static LocalizableString L(string name)

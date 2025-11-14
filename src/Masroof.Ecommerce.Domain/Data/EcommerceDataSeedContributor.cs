@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Masroof.Ecommerce.Categories;
 using Masroof.Ecommerce.Products;
+using Masroof.Ecommerce.Coupons;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
@@ -13,15 +14,18 @@ public class EcommerceDataSeedContributor : IDataSeedContributor, ITransientDepe
 {
     private readonly IRepository<Category, Guid> _categoryRepository;
     private readonly IRepository<Product, Guid> _productRepository;
+    private readonly IRepository<Coupon, Guid> _couponRepository;
     private readonly IGuidGenerator _guidGenerator;
 
     public EcommerceDataSeedContributor(
         IRepository<Category, Guid> categoryRepository,
         IRepository<Product, Guid> productRepository,
+        IRepository<Coupon, Guid> couponRepository,
         IGuidGenerator guidGenerator)
     {
         _categoryRepository = categoryRepository;
         _productRepository = productRepository;
+        _couponRepository = couponRepository;
         _guidGenerator = guidGenerator;
     }
 
@@ -29,6 +33,7 @@ public class EcommerceDataSeedContributor : IDataSeedContributor, ITransientDepe
     {
         await SeedCategoriesAsync();
         await SeedProductsAsync();
+        await SeedCouponsAsync();
     }
 
     private async Task SeedCategoriesAsync()
@@ -232,6 +237,88 @@ public class EcommerceDataSeedContributor : IDataSeedContributor, ITransientDepe
 
         await _productRepository.InsertManyAsync(
             new[] { laptop1, laptop2, phone1, phone2, headphone1, headphone2 },
+            autoSave: true
+        );
+    }
+
+    private async Task SeedCouponsAsync()
+    {
+        if (await _couponRepository.GetCountAsync() > 0)
+        {
+            return; // Already seeded
+        }
+
+        var now = DateTime.UtcNow;
+
+        // Welcome Coupon - 10% off
+        var welcomeCoupon = new Coupon(
+            _guidGenerator.Create(),
+            "WELCOME10",
+            DiscountType.Percentage,
+            10m,
+            now,
+            now.AddMonths(3)
+        );
+        welcomeCoupon.Description = "Welcome discount for new customers";
+        welcomeCoupon.MinimumOrderAmount = 50m;
+        welcomeCoupon.MaxUsageCount = 100;
+
+        // Summer Sale - 15% off
+        var summerCoupon = new Coupon(
+            _guidGenerator.Create(),
+            "SUMMER15",
+            DiscountType.Percentage,
+            15m,
+            now,
+            now.AddMonths(2)
+        );
+        summerCoupon.Description = "Summer sale discount";
+        summerCoupon.MinimumOrderAmount = 100m;
+        summerCoupon.MaximumDiscountAmount = 50m;
+        summerCoupon.MaxUsageCount = 50;
+
+        // Fixed Discount - $25 off
+        var fixedCoupon = new Coupon(
+            _guidGenerator.Create(),
+            "SAVE25",
+            DiscountType.FixedAmount,
+            25m,
+            now,
+            now.AddMonths(6)
+        );
+        fixedCoupon.Description = "Save $25 on orders over $200";
+        fixedCoupon.MinimumOrderAmount = 200m;
+        fixedCoupon.MaxUsageCount = 200;
+
+        // VIP Coupon - 20% off
+        var vipCoupon = new Coupon(
+            _guidGenerator.Create(),
+            "VIP20",
+            DiscountType.Percentage,
+            20m,
+            now,
+            now.AddYears(1)
+        );
+        vipCoupon.Description = "VIP customer exclusive discount";
+        vipCoupon.MinimumOrderAmount = 500m;
+        vipCoupon.MaxUsageCount = 25;
+
+        // Flash Sale - 30% off (limited time)
+        var flashCoupon = new Coupon(
+            _guidGenerator.Create(),
+            "FLASH30",
+            DiscountType.Percentage,
+            30m,
+            now,
+            now.AddDays(7)
+        );
+        flashCoupon.Description = "Flash sale - 7 days only!";
+        flashCoupon.MinimumOrderAmount = 150m;
+        flashCoupon.MaximumDiscountAmount = 100m;
+        flashCoupon.MaxUsageCount = 30;
+
+        await _couponRepository.InsertManyAsync(
+            new[] { welcomeCoupon, summerCoupon, fixedCoupon, vipCoupon, flashCoupon },
             autoSave: true
         );
     }

@@ -19,6 +19,7 @@ using Masroof.Ecommerce.Addresses;
 using Masroof.Ecommerce.Orders;
 using Masroof.Ecommerce.Payments;
 using Masroof.Ecommerce.ShoppingCarts;
+using Masroof.Ecommerce.Coupons;
 
 namespace Masroof.Ecommerce.EntityFrameworkCore;
 
@@ -40,6 +41,7 @@ public class EcommerceDbContext :
     public DbSet<Payment> Payments { get; set; }
     public DbSet<ShoppingCart> ShoppingCarts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<Coupon> Coupons { get; set; }
 
     #region Entities from the modules
 
@@ -241,6 +243,22 @@ public class EcommerceDbContext :
             b.Property(x => x.Price).HasColumnType("decimal(18,2)");
             b.Property(x => x.ImageUrl).HasMaxLength(500);
             b.HasIndex(x => x.ProductId);
+        });
+
+        // Coupon
+        builder.Entity<Coupon>(b =>
+        {
+            b.ToTable(EcommerceConsts.DbTablePrefix + "Coupons", EcommerceConsts.DbSchema);
+            b.ConfigureByConvention();
+            b.Property(x => x.Code).IsRequired().HasMaxLength(50);
+            b.Property(x => x.Description).HasMaxLength(500);
+            b.Property(x => x.DiscountValue).HasColumnType("decimal(18,2)");
+            b.Property(x => x.MinimumOrderAmount).HasColumnType("decimal(18,2)");
+            b.Property(x => x.MaximumDiscountAmount).HasColumnType("decimal(18,2)");
+            b.HasIndex(x => x.Code).IsUnique();
+            b.HasIndex(x => x.IsActive);
+            b.HasIndex(x => x.ValidFrom);
+            b.HasIndex(x => x.ValidTo);
         });
     }
 }

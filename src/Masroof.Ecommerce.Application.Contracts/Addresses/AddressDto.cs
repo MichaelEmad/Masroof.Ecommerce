@@ -18,10 +18,3 @@ public class AddressDto : FullAuditedEntityDto<Guid>
     public AddressType AddressType { get; set; }
     public string FormattedAddress { get; set; } = string.Empty;
 }
-
-public enum AddressType
-{
-    Shipping = 1,
-    Billing = 2,
-    Both = 3
-}

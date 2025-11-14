@@ -17,21 +17,3 @@ public class PaymentDto : FullAuditedEntityDto<Guid>
     public string? CardLast4Digits { get; set; }
     public string? CardBrand { get; set; }
 }
-
-public enum PaymentMethod
-{
-    CreditCard = 1,
-    DebitCard = 2,
-    PayPal = 3,
-    BankTransfer = 4,
-    CashOnDelivery = 5
-}
-
-public enum PaymentStatus
-{
-    Pending = 0,
-    Processing = 1,
-    Succeeded = 2,
-    Failed = 3,
-    Refunded = 4
-}

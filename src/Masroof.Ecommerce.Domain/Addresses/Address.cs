@@ -62,10 +62,3 @@ public class Address : FullAuditedAggregateRoot<Guid>
         return $"{AddressLine1}{line2}, {City}, {State} {PostalCode}, {Country}";
     }
 }
-
-public enum AddressType
-{
-    Shipping = 1,
-    Billing = 2,
-    Both = 3
-}

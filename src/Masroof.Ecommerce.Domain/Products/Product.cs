@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Masroof.Ecommerce.Products;
@@ -12,7 +14,7 @@ public class Product : FullAuditedAggregateRoot<Guid>
     public decimal? DiscountPrice { get; set; }
     public string? SKU { get; set; }
     public int StockQuantity { get; set; }
-    public string? ImageUrl { get; set; }
+    public string? ImageUrl { get; set; } // Kept for backward compatibility / primary image quick access
     public bool IsActive { get; set; }
     public bool IsFeatured { get; set; }
     public Guid? CategoryId { get; set; }
@@ -20,6 +22,9 @@ public class Product : FullAuditedAggregateRoot<Guid>
     public string? Brand { get; set; }
     public int ViewCount { get; set; }
     public int SoldCount { get; set; }
+
+    // Multiple images support
+    public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
 
     protected Product()
     {
@@ -77,5 +82,26 @@ public class Product : FullAuditedAggregateRoot<Guid>
     public decimal GetEffectivePrice()
     {
         return DiscountPrice ?? Price;
+    }
+
+    public string? GetPrimaryImageUrl()
+    {
+        var primaryImage = Images.FirstOrDefault(i => i.IsPrimary);
+        return primaryImage?.Url ?? Images.FirstOrDefault()?.Url ?? ImageUrl;
+    }
+
+    public void SetPrimaryImage(Guid imageId)
+    {
+        foreach (var image in Images)
+        {
+            image.SetAsSecondary();
+        }
+
+        var primaryImage = Images.FirstOrDefault(i => i.Id == imageId);
+        if (primaryImage != null)
+        {
+            primaryImage.SetAsPrimary();
+            ImageUrl = primaryImage.Url; // Update quick access property
+        }
     }
 }

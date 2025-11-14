@@ -33,6 +33,7 @@ public class EcommerceDbContext :
 
     // E-commerce entities
     public DbSet<Product> Products { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Address> Addresses { get; set; }
@@ -107,6 +108,20 @@ public class EcommerceDbContext :
             b.Property(x => x.Weight).HasColumnType("decimal(18,2)");
             b.HasIndex(x => x.CategoryId);
             b.HasIndex(x => x.SKU);
+            b.HasMany(x => x.Images).WithOne().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ProductImage
+        builder.Entity<ProductImage>(b =>
+        {
+            b.ToTable(EcommerceConsts.DbTablePrefix + "ProductImages", EcommerceConsts.DbSchema);
+            b.ConfigureByConvention();
+            b.Property(x => x.BlobName).IsRequired().HasMaxLength(256);
+            b.Property(x => x.FileName).IsRequired().HasMaxLength(256);
+            b.Property(x => x.ContentType).IsRequired().HasMaxLength(100);
+            b.Property(x => x.Url).IsRequired().HasMaxLength(1000);
+            b.HasIndex(x => x.ProductId);
+            b.HasIndex(x => x.IsPrimary);
         });
 
         // Category

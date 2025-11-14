@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '@abp/ng.core';
 
 export const ecommerceRoutes: Routes = [
   {
@@ -10,6 +11,12 @@ export const ecommerceRoutes: Routes = [
     path: 'cart',
     loadComponent: () =>
       import('./shopping-cart/shopping-cart.component').then(m => m.ShoppingCartComponent),
+  },
+  {
+    path: 'my-orders',
+    loadComponent: () =>
+      import('./my-orders/my-orders.component').then(m => m.MyOrdersComponent),
+    canActivate: [authGuard],
   },
   {
     path: '',

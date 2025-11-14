@@ -19,6 +19,12 @@ export const ecommerceRoutes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'admin-dashboard',
+    loadComponent: () =>
+      import('./admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     redirectTo: 'products',
     pathMatch: 'full',

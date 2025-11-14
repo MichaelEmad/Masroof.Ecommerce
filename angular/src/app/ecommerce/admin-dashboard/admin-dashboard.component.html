@@ -1,0 +1,260 @@
+<div class="container-fluid mt-4">
+  <h2 class="mb-4">E-Commerce Dashboard</h2>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && stats">
+    <!-- Revenue & Key Metrics -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card stat-card bg-primary text-white">
+          <div class="card-body">
+            <h6 class="card-title">Total Revenue</h6>
+            <h3 class="mb-0">${{ stats.revenueStats.totalRevenue | number:'1.2-2' }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-success text-white">
+          <div class="card-body">
+            <h6 class="card-title">This Month</h6>
+            <h3 class="mb-0">${{ stats.revenueStats.revenueThisMonth | number:'1.2-2' }}</h3>
+            <small [class]="getGrowthClass(stats.revenueStats.growthPercentage)">
+              {{ getGrowthIcon(stats.revenueStats.growthPercentage) }}
+              {{ stats.revenueStats.growthPercentage | number:'1.1-1' }}%
+            </small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-info text-white">
+          <div class="card-body">
+            <h6 class="card-title">Total Orders</h6>
+            <h3 class="mb-0">{{ stats.orderStats.totalOrders }}</h3>
+            <small>{{ stats.orderStats.pendingOrders }} pending</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card bg-warning text-dark">
+          <div class="card-body">
+            <h6 class="card-title">Total Customers</h6>
+            <h3 class="mb-0">{{ stats.customerStats.totalCustomers }}</h3>
+            <small>{{ stats.customerStats.newCustomersThisMonth }} new this month</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Orders Chart -->
+      <div class="col-lg-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Orders by Status</h5>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div *ngFor="let item of stats.orderStats.ordersByStatus" class="chart-bar-item mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="fw-bold">{{ item.status }}</span>
+                  <span>{{ item.count }} ({{ item.percentage | number:'1.0-0' }}%)</span>
+                </div>
+                <div class="progress" style="height: 25px;">
+                  <div
+                    class="progress-bar"
+                    [class]="'bg-' + getStatusColor(item.status)"
+                    [style.width.%]="item.percentage"
+                    role="progressbar">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Stats -->
+      <div class="col-lg-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Product Statistics</h5>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-6 mb-3">
+                <div class="stat-box">
+                  <h4 class="text-primary">{{ stats.productStats.totalProducts }}</h4>
+                  <small class="text-muted">Total Products</small>
+                </div>
+              </div>
+              <div class="col-6 mb-3">
+                <div class="stat-box">
+                  <h4 class="text-success">{{ stats.productStats.activeProducts }}</h4>
+                  <small class="text-muted">Active Products</small>
+                </div>
+              </div>
+              <div class="col-6 mb-3">
+                <div class="stat-box">
+                  <h4 class="text-danger">{{ stats.productStats.outOfStockProducts }}</h4>
+                  <small class="text-muted">Out of Stock</small>
+                </div>
+              </div>
+              <div class="col-6 mb-3">
+                <div class="stat-box">
+                  <h4 class="text-warning">{{ stats.productStats.lowStockProducts }}</h4>
+                  <small class="text-muted">Low Stock</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Top Selling Products -->
+      <div class="col-lg-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Top Selling Products</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th class="text-end">Sold</th>
+                    <th class="text-end">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let product of stats.productStats.topSellingProducts">
+                    <td>{{ product.name }}</td>
+                    <td class="text-end">{{ product.soldCount }}</td>
+                    <td class="text-end">${{ product.revenue | number:'1.2-2' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div *ngIf="stats.productStats.topSellingProducts.length === 0" class="text-center text-muted py-3">
+                No sales data yet
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Customers -->
+      <div class="col-lg-6 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Top Customers</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th class="text-end">Orders</th>
+                    <th class="text-end">Spent</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let customer of stats.customerStats.topCustomers">
+                    <td>{{ customer.name }}</td>
+                    <td class="text-end">{{ customer.totalOrders }}</td>
+                    <td class="text-end">${{ customer.totalSpent | number:'1.2-2' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div *ngIf="stats.customerStats.topCustomers.length === 0" class="text-center text-muted py-3">
+                No customer data yet
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Recent Orders</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th class="text-end">Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let order of stats.orderStats.recentOrders">
+                    <td>{{ order.orderNumber }}</td>
+                    <td>{{ order.customerName }}</td>
+                    <td>{{ order.orderDate | date:'short' }}</td>
+                    <td class="text-end">${{ order.totalAmount | number:'1.2-2' }}</td>
+                    <td>
+                      <span
+                        class="badge"
+                        [class]="'bg-' + getStatusColor(order.status)">
+                        {{ order.status }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div *ngIf="stats.orderStats.recentOrders.length === 0" class="text-center text-muted py-3">
+                No orders yet
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Metrics -->
+    <div class="row mt-4">
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+            <h4 class="mt-3">{{ stats.customerStats.totalCustomers }}</h4>
+            <p class="text-muted mb-0">Total Customers</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <i class="bi bi-person-plus-fill text-success" style="font-size: 3rem;"></i>
+            <h4 class="mt-3">{{ stats.customerStats.newCustomersThisMonth }}</h4>
+            <p class="text-muted mb-0">New This Month</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <i class="bi bi-star-fill text-warning" style="font-size: 3rem;"></i>
+            <h4 class="mt-3">{{ stats.customerStats.vipCustomers }}</h4>
+            <p class="text-muted mb-0">VIP Customers</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

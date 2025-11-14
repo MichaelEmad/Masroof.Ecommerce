@@ -1,5 +1,6 @@
 using Masroof.Ecommerce.Catalog;
 using Masroof.Ecommerce.Carts;
+using Masroof.Ecommerce.Coupons;
 using Masroof.Ecommerce.Orders;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -32,6 +33,7 @@ public class EcommerceDbContext :
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductAllergen> ProductAllergens { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<Coupon> Coupons { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
 

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Masroof.Ecommerce.Catalog;
 using Masroof.Ecommerce.Carts;
+using Masroof.Ecommerce.Coupons;
 using Masroof.Ecommerce.Orders;
 using System.Linq;
 
@@ -33,5 +34,9 @@ public class EcommerceApplicationAutoMapperProfile : Profile
         CreateMap<Order, OrderDto>();
         CreateMap<OrderItem, OrderItemDto>()
             .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.GetTotalPrice()));
+
+        // Coupon
+        CreateMap<Coupon, CouponDto>();
+        CreateMap<CreateUpdateCouponDto, Coupon>();
     }
 }

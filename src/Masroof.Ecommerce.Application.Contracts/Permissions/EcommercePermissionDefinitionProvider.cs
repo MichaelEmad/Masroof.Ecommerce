@@ -37,6 +37,12 @@ public class EcommercePermissionDefinitionProvider : PermissionDefinitionProvide
 
         // Cart - All authenticated users
         myGroup.AddPermission(EcommercePermissions.Cart.Default, L("Permission:Cart"));
+
+        // Coupons - SuperAdmin only
+        var couponsPermission = myGroup.AddPermission(EcommercePermissions.Coupons.Default, L("Permission:Coupons"));
+        couponsPermission.AddChild(EcommercePermissions.Coupons.Create, L("Permission:Coupons.Create"));
+        couponsPermission.AddChild(EcommercePermissions.Coupons.Edit, L("Permission:Coupons.Edit"));
+        couponsPermission.AddChild(EcommercePermissions.Coupons.Delete, L("Permission:Coupons.Delete"));
     }
 
     private static LocalizableString L(string name)

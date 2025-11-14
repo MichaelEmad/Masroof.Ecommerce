@@ -1,5 +1,6 @@
 using Masroof.Ecommerce.Catalog;
 using Masroof.Ecommerce.Carts;
+using Masroof.Ecommerce.Coupons;
 using Masroof.Ecommerce.Orders;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp;
@@ -88,6 +89,24 @@ public static class EcommerceDbContextModelCreatingExtensions
 
             b.HasIndex(x => x.CustomerId);
             b.HasIndex(x => new { x.CustomerId, x.ProductId });
+        });
+
+        // Coupon
+        builder.Entity<Coupon>(b =>
+        {
+            b.ToTable(EcommerceConsts.DbTablePrefix + "Coupons", EcommerceConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Code).IsRequired().HasMaxLength(50);
+            b.Property(x => x.Description).HasMaxLength(512);
+            b.Property(x => x.DiscountValue).HasColumnType("decimal(18,2)");
+            b.Property(x => x.MinimumOrderAmount).HasColumnType("decimal(18,2)");
+            b.Property(x => x.MaximumDiscountAmount).HasColumnType("decimal(18,2)");
+
+            b.HasIndex(x => x.Code).IsUnique();
+            b.HasIndex(x => x.IsActive);
+            b.HasIndex(x => x.ValidFrom);
+            b.HasIndex(x => x.ValidTo);
         });
 
         // Order

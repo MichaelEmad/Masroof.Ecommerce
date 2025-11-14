@@ -34,7 +34,7 @@ public class ImageAppService : ApplicationService, IImageAppService
         };
     }
 
-    public async Task DeleteImageAsync(string imageUrl)
+    public async Task DeleteImageAsync(string? imageUrl)
     {
         await _imageUploadService.DeleteImageAsync(imageUrl);
     }

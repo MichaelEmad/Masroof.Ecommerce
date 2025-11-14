@@ -7,5 +7,5 @@ namespace Masroof.Ecommerce.Images;
 public interface IImageAppService : IApplicationService
 {
     Task<ImageUploadResultDto> UploadImageAsync(IFormFile file, string entityType);
-    Task DeleteImageAsync(string imageUrl);
+    Task DeleteImageAsync(string? imageUrl);
 }

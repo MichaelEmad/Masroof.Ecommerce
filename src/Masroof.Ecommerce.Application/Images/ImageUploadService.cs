@@ -10,8 +10,8 @@ namespace Masroof.Ecommerce.Images;
 public interface IImageUploadService
 {
     Task<string> UploadImageAsync(IFormFile file, string folder);
-    Task DeleteImageAsync(string imageUrl);
-    bool IsValidImage(IFormFile file);
+    Task DeleteImageAsync(string? imageUrl);
+    bool IsValidImage(IFormFile? file);
 }
 
 public class ImageUploadService : IImageUploadService, ITransientDependency
@@ -20,7 +20,7 @@ public class ImageUploadService : IImageUploadService, ITransientDependency
     private readonly long _maxFileSize = 5 * 1024 * 1024; // 5MB
     private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
 
-    public bool IsValidImage(IFormFile file)
+    public bool IsValidImage(IFormFile? file)
     {
         if (file == null || file.Length == 0)
         {
@@ -69,7 +69,7 @@ public class ImageUploadService : IImageUploadService, ITransientDependency
         return $"/uploads/{folder}/{fileName}";
     }
 
-    public Task DeleteImageAsync(string imageUrl)
+    public Task DeleteImageAsync(string? imageUrl)
     {
         if (string.IsNullOrWhiteSpace(imageUrl))
         {

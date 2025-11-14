@@ -29,7 +29,7 @@ public class ImageController : EcommerceController
 
     [HttpDelete]
     [Route("delete")]
-    public async Task DeleteImageAsync([FromQuery] string imageUrl)
+    public async Task DeleteImageAsync([FromQuery] string? imageUrl)
     {
         await _imageAppService.DeleteImageAsync(imageUrl);
     }

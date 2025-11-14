@@ -1,3 +1,6 @@
+using Masroof.Ecommerce.Catalog;
+using Masroof.Ecommerce.Carts;
+using Masroof.Ecommerce.Orders;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -23,6 +26,14 @@ public class EcommerceDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
+    // E-commerce entities
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Allergen> Allergens { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<ProductAllergen> ProductAllergens { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
 
     #region Entities from the modules
 
@@ -69,14 +80,9 @@ public class EcommerceDbContext :
         builder.ConfigureIdentityPro();
         builder.ConfigureOpenIddictPro();
         builder.ConfigureBlobStoring();
-        
+
         /* Configure your own tables/entities inside here */
 
-        //builder.Entity<YourEntity>(b =>
-        //{
-        //    b.ToTable(EcommerceConsts.DbTablePrefix + "YourEntities", EcommerceConsts.DbSchema);
-        //    b.ConfigureByConvention(); //auto configure for the base class props
-        //    //...
-        //});
+        builder.ConfigureEcommerce();
     }
 }

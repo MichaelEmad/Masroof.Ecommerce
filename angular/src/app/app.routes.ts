@@ -32,4 +32,18 @@ export const APP_ROUTES: Routes = [
     path: 'setting-management',
     loadChildren: () => import('@abp/ng.setting-management').then(c => c.createRoutes()),
   },
+  {
+    path: 'products',
+    loadComponent: () => import('./products/products.component').then(c => c.ProductsComponent),
+  },
+  {
+    path: 'cart',
+    loadComponent: () => import('./cart/cart.component').then(c => c.CartComponent),
+    canActivate: [authGuard, permissionGuard],
+  },
+  {
+    path: 'checkout',
+    loadComponent: () => import('./checkout/checkout.component').then(c => c.CheckoutComponent),
+    canActivate: [authGuard, permissionGuard],
+  },
 ];

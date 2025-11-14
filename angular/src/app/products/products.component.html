@@ -1,0 +1,38 @@
+<abp-page [title]="'::Products' | abpLocalization">
+  <abp-page-toolbar-container>
+    <div class="col-auto">
+      <input type="text" class="form-control" placeholder="Search products..." />
+    </div>
+  </abp-page-toolbar-container>
+
+  <div class="row">
+    <div class="col-md-3 mb-4" *ngFor="let product of products.items">
+      <div class="card h-100">
+        <img [src]="product.imageUrl || 'assets/images/placeholder.png'" class="card-img-top" alt="{{ product.name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">{{ product.description }}</p>
+          <p class="card-text">
+            <strong>{{ product.price | currency }}</strong>
+          </p>
+          <p class="card-text" *ngIf="product.stock > 0">
+            <small class="text-muted">In Stock: {{ product.stock }}</small>
+          </p>
+          <p class="card-text" *ngIf="product.stock === 0">
+            <small class="text-danger">Out of Stock</small>
+          </p>
+          <button
+            class="btn btn-primary w-100"
+            (click)="addToCart(product.id)"
+            [disabled]="product.stock === 0">
+            <i class="fas fa-shopping-cart"></i> Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="products.items.length === 0" class="text-center mt-5">
+    <p>No products available</p>
+  </div>
+</abp-page>

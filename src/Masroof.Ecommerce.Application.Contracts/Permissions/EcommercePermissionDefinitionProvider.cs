@@ -13,8 +13,30 @@ public class EcommercePermissionDefinitionProvider : PermissionDefinitionProvide
 
         myGroup.AddPermission(EcommercePermissions.Dashboard.Host, L("Permission:Dashboard"), MultiTenancySides.Host);
 
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(EcommercePermissions.MyPermission1, L("Permission:MyPermission1"));
+        // Categories - SuperAdmin only
+        var categoriesPermission = myGroup.AddPermission(EcommercePermissions.Categories.Default, L("Permission:Categories"));
+        categoriesPermission.AddChild(EcommercePermissions.Categories.Create, L("Permission:Categories.Create"));
+        categoriesPermission.AddChild(EcommercePermissions.Categories.Edit, L("Permission:Categories.Edit"));
+        categoriesPermission.AddChild(EcommercePermissions.Categories.Delete, L("Permission:Categories.Delete"));
+
+        // Allergens - SuperAdmin only
+        var allergensPermission = myGroup.AddPermission(EcommercePermissions.Allergens.Default, L("Permission:Allergens"));
+        allergensPermission.AddChild(EcommercePermissions.Allergens.Create, L("Permission:Allergens.Create"));
+        allergensPermission.AddChild(EcommercePermissions.Allergens.Edit, L("Permission:Allergens.Edit"));
+        allergensPermission.AddChild(EcommercePermissions.Allergens.Delete, L("Permission:Allergens.Delete"));
+
+        // Products - SuperAdmin only
+        var productsPermission = myGroup.AddPermission(EcommercePermissions.Products.Default, L("Permission:Products"));
+        productsPermission.AddChild(EcommercePermissions.Products.Create, L("Permission:Products.Create"));
+        productsPermission.AddChild(EcommercePermissions.Products.Edit, L("Permission:Products.Edit"));
+        productsPermission.AddChild(EcommercePermissions.Products.Delete, L("Permission:Products.Delete"));
+
+        // Orders - SuperAdmin can manage all, Customers can manage their own
+        var ordersPermission = myGroup.AddPermission(EcommercePermissions.Orders.Default, L("Permission:Orders"));
+        ordersPermission.AddChild(EcommercePermissions.Orders.ManageAll, L("Permission:Orders.ManageAll"));
+
+        // Cart - All authenticated users
+        myGroup.AddPermission(EcommercePermissions.Cart.Default, L("Permission:Cart"));
     }
 
     private static LocalizableString L(string name)

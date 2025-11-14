@@ -10,7 +10,38 @@ public static class EcommercePermissions
         public const string Host = DashboardGroup + ".Host";
     }
 
-    
-    //Add your own permission names. Example:
-    //public const string MyPermission1 = GroupName + ".MyPermission1";
+    public static class Categories
+    {
+        public const string Default = GroupName + ".Categories";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Allergens
+    {
+        public const string Default = GroupName + ".Allergens";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Products
+    {
+        public const string Default = GroupName + ".Products";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Orders
+    {
+        public const string Default = GroupName + ".Orders";
+        public const string ManageAll = Default + ".ManageAll";
+    }
+
+    public static class Cart
+    {
+        public const string Default = GroupName + ".Cart";
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Masroof.Ecommerce.Images;
 using Masroof.Ecommerce.Permissions;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Application.Dtos;
@@ -20,13 +21,16 @@ public class ProductAppService :
     IProductAppService
 {
     private readonly IRepository<ProductAllergen> _productAllergenRepository;
+    private readonly IImageUploadService _imageUploadService;
 
     public ProductAppService(
         IRepository<Product, Guid> repository,
-        IRepository<ProductAllergen> productAllergenRepository)
+        IRepository<ProductAllergen> productAllergenRepository,
+        IImageUploadService imageUploadService)
         : base(repository)
     {
         _productAllergenRepository = productAllergenRepository;
+        _imageUploadService = imageUploadService;
 
         GetPolicyName = EcommercePermissions.Products.Default;
         GetListPolicyName = EcommercePermissions.Products.Default;
@@ -101,6 +105,14 @@ public class ProductAppService :
     {
         var product = await Repository.GetAsync(id);
 
+        // Delete old image if it's being replaced
+        if (!string.IsNullOrWhiteSpace(product.ImageUrl) &&
+            product.ImageUrl != input.ImageUrl &&
+            !string.IsNullOrWhiteSpace(input.ImageUrl))
+        {
+            await _imageUploadService.DeleteImageAsync(product.ImageUrl);
+        }
+
         product.Name = input.Name;
         product.Description = input.Description;
         product.Price = input.Price;
@@ -129,5 +141,18 @@ public class ProductAppService :
         }
 
         return await GetAsync(id);
+    }
+
+    public override async Task DeleteAsync(Guid id)
+    {
+        var product = await Repository.GetAsync(id);
+
+        // Delete image file if exists
+        if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+        {
+            await _imageUploadService.DeleteImageAsync(product.ImageUrl);
+        }
+
+        await base.DeleteAsync(id);
     }
 }

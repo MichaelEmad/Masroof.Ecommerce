@@ -343,3 +343,186 @@ Mappings configured in `EcommerceApplicationAutoMapperProfile` for automatic DTO
 For ABP Framework documentation, visit: https://docs.abp.io
 
 For issues specific to this implementation, please refer to the project's issue tracker.
+
+## Image Upload System
+
+### Overview
+The application includes a robust file upload system for managing images for Products, Categories, and Allergens.
+
+### Features
+- Secure file uploads with validation
+- Support for multiple image formats (JPG, PNG, GIF, WebP)
+- Maximum file size: 5MB
+- Automatic file naming using GUIDs to prevent conflicts
+- Organized folder structure per entity type
+- Automatic image deletion when entities are deleted or updated
+
+### Folder Structure
+```
+wwwroot/
+  uploads/
+    products/       # Product images
+    categories/     # Category images (future use)
+    allergens/      # Allergen icons
+```
+
+### API Endpoints
+
+#### Upload Image
+```
+POST /api/app/images/upload
+Content-Type: multipart/form-data
+
+Parameters:
+- file: The image file (required)
+- entityType: Entity type - "products", "categories", or "allergens" (required)
+
+Response:
+{
+  "imageUrl": "/uploads/products/guid.jpg",
+  "fileName": "guid.jpg"
+}
+```
+
+#### Delete Image
+```
+DELETE /api/app/images/delete?imageUrl={imageUrl}
+
+Parameters:
+- imageUrl: The URL of the image to delete (required)
+```
+
+### Implementation Details
+
+#### Image Upload Service
+- **Location**: `Masroof.Ecommerce.Application/Images/ImageUploadService.cs`
+- **Interface**: `IImageUploadService`
+- **Features**:
+  - File type validation (.jpg, .jpeg, .png, .gif, .webp)
+  - File size validation (max 5MB)
+  - Automatic GUID-based file naming
+  - Automatic folder creation
+  - Safe file deletion
+
+#### Application Service
+- **Location**: `Masroof.Ecommerce.Application/Images/ImageAppService.cs`
+- **Endpoint**: Exposed via `ImageController`
+- **Authorization**: Requires authentication
+
+#### Automatic Cleanup
+Images are automatically deleted in the following scenarios:
+1. When a Product is deleted (ProductAppService:146-157)
+2. When an Allergen is deleted (AllergenAppService:52-63)
+3. When a Product's image is updated (ProductAppService:108-114)
+4. When an Allergen's icon is updated (AllergenAppService:37-50)
+
+### Frontend Integration
+
+#### TypeScript Example
+```typescript
+// Service method
+uploadProductImage(file: File): Observable<ImageUploadResultDto> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('entityType', 'products');
+  
+  return this.http.post<ImageUploadResultDto>(
+    '/api/app/images/upload',
+    formData
+  );
+}
+
+// Component usage
+onImageSelected(event: any): void {
+  const file = event.target.files[0];
+  if (file) {
+    this.imageService.uploadProductImage(file).subscribe(
+      result => {
+        this.product.imageUrl = result.imageUrl;
+        console.log('Image uploaded:', result.imageUrl);
+      },
+      error => {
+        console.error('Upload failed:', error);
+      }
+    );
+  }
+}
+```
+
+#### HTML Example
+```html
+<div class="form-group">
+  <label>Product Image</label>
+  <input type="file" 
+         accept="image/jpeg,image/png,image/gif,image/webp"
+         (change)="onImageSelected($event)" />
+  
+  <img *ngIf="product.imageUrl" 
+       [src]="product.imageUrl" 
+       alt="Product Image"
+       class="img-thumbnail mt-2"
+       style="max-width: 200px;" />
+</div>
+```
+
+### Security Considerations
+1. **File Type Validation**: Only allowed image formats can be uploaded
+2. **File Size Limit**: Maximum 5MB to prevent abuse
+3. **GUID Naming**: Original filenames are replaced to prevent path traversal attacks
+4. **Separate Folders**: Images organized by entity type for better management
+5. **Authentication Required**: Only authenticated users can upload/delete images
+
+### Production Recommendations
+For production deployments, consider:
+1. **Cloud Storage**: Migrate to Azure Blob Storage, AWS S3, or similar
+2. **CDN Integration**: Use a CDN for faster image delivery
+3. **Image Optimization**: Implement automatic image compression and resizing
+4. **Thumbnail Generation**: Create multiple sizes for different use cases
+5. **Backup Strategy**: Implement regular backups of uploaded images
+6. **Monitoring**: Track storage usage and upload patterns
+
+### Cloud Storage Migration
+To migrate to cloud storage (e.g., Azure Blob Storage):
+
+1. Install ABP Blob Storing package:
+```bash
+dotnet add package Volo.Abp.BlobStoring.Azure
+```
+
+2. Update `ImageUploadService` to use ABP's `IBlobContainer`:
+```csharp
+public class ImageUploadService : IImageUploadService
+{
+    private readonly IBlobContainer _blobContainer;
+    
+    public ImageUploadService(IBlobContainer blobContainer)
+    {
+        _blobContainer = blobContainer;
+    }
+    
+    public async Task<string> UploadImageAsync(IFormFile file, string folder)
+    {
+        var blobName = $"{folder}/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        
+        using (var stream = file.OpenReadStream())
+        {
+            await _blobContainer.SaveAsync(blobName, stream);
+        }
+        
+        return blobName; // Return blob URL from your cloud provider
+    }
+}
+```
+
+3. Configure Azure Blob Storage in `appsettings.json`:
+```json
+{
+  "AbpBlobStoring": {
+    "Azure": {
+      "ConnectionString": "your-connection-string",
+      "ContainerName": "ecommerce-images"
+    }
+  }
+}
+```
+

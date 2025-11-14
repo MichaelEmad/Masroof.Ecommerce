@@ -25,6 +25,12 @@ export const ecommerceRoutes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'coupon-management',
+    loadComponent: () =>
+      import('./coupon-management/coupon-management.component').then(m => m.CouponManagementComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '',
     redirectTo: 'products',
     pathMatch: 'full',

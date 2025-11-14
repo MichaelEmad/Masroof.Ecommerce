@@ -1,0 +1,4 @@
+image:
+  repository: "ecommerce/httpapihost"
+  tag: "latest"
+  pullPolicy: IfNotPresent

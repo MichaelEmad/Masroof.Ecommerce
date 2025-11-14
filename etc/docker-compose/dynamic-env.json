@@ -1,0 +1,25 @@
+{
+  "production": true,
+  "application": {
+    "baseUrl":"http://localhost:4200",
+    "name": "Ecommerce",
+    "logoUrl": ""
+  },
+  "oAuthConfig": {
+    "issuer": "https://localhost:44302/",
+    "redirectUri": "http://localhost:4200",
+    "clientId": "Ecommerce_App",
+    "responseType": "code",
+    "scope": "offline_access openid profile email phone Ecommerce"
+  },
+  "apis": {
+    "default": {
+      "url": "https://localhost:44302",
+      "rootNamespace": "Ecommerce"
+    },
+    "AbpAccountPublic": {
+      "url": "https://localhost:44302",
+      "rootNamespace": "AbpAccountPublic"
+    }
+  }
+}

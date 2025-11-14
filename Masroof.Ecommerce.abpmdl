@@ -1,0 +1,108 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXTheme": {
+      "version": "4.3.6",
+      "isInstalled": true
+    },
+    "Volo.Abp.OpenIddict.Pro": {
+      "version": "9.3.6",
+      "isInstalled": true,
+      "creationTime": "11/14/2025 12:17:56 +00:00"
+    },
+    "Volo.Abp.AuditLogging.Pro": {
+      "version": "9.3.6",
+      "isInstalled": true,
+      "creationTime": "11/14/2025 12:17:56 +00:00"
+    },
+    "Volo.Abp.Identity.Pro": {
+      "version": "9.3.6",
+      "isInstalled": true,
+      "creationTime": "11/14/2025 12:17:56 +00:00"
+    },
+    "Volo.Abp.Account.Pro": {
+      "version": "9.3.6",
+      "isInstalled": true,
+      "creationTime": "11/14/2025 12:17:56 +00:00"
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "9.3.6",
+      "isInstalled": true,
+      "creationTime": "11/14/2025 12:17:56 +00:00"
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "9.3.6",
+      "isInstalled": true,
+      "creationTime": "11/14/2025 12:17:56 +00:00"
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "9.3.6",
+      "isInstalled": true,
+      "creationTime": "11/14/2025 12:17:56 +00:00"
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "Masroof.Ecommerce.Application": {
+      "path": "src/Masroof.Ecommerce.Application/Masroof.Ecommerce.Application.abppkg",
+      "folder": "src"
+    },
+    "Masroof.Ecommerce.Application.Tests": {
+      "path": "test/Masroof.Ecommerce.Application.Tests/Masroof.Ecommerce.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "Masroof.Ecommerce.Domain.Shared": {
+      "path": "src/Masroof.Ecommerce.Domain.Shared/Masroof.Ecommerce.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "Masroof.Ecommerce.Application.Contracts": {
+      "path": "src/Masroof.Ecommerce.Application.Contracts/Masroof.Ecommerce.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "Masroof.Ecommerce.HttpApi": {
+      "path": "src/Masroof.Ecommerce.HttpApi/Masroof.Ecommerce.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "Masroof.Ecommerce.HttpApi.Client": {
+      "path": "src/Masroof.Ecommerce.HttpApi.Client/Masroof.Ecommerce.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "Masroof.Ecommerce.EntityFrameworkCore.Tests": {
+      "path": "test/Masroof.Ecommerce.EntityFrameworkCore.Tests/Masroof.Ecommerce.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "Masroof.Ecommerce.EntityFrameworkCore": {
+      "path": "src/Masroof.Ecommerce.EntityFrameworkCore/Masroof.Ecommerce.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "Masroof.Ecommerce.TestBase": {
+      "path": "test/Masroof.Ecommerce.TestBase/Masroof.Ecommerce.TestBase.abppkg",
+      "folder": "test"
+    },
+    "Masroof.Ecommerce.Domain.Tests": {
+      "path": "test/Masroof.Ecommerce.Domain.Tests/Masroof.Ecommerce.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "Masroof.Ecommerce.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/Masroof.Ecommerce.HttpApi.Client.ConsoleTestApp/Masroof.Ecommerce.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "Masroof.Ecommerce.DbMigrator": {
+      "path": "src/Masroof.Ecommerce.DbMigrator/Masroof.Ecommerce.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "Masroof.Ecommerce.HttpApi.Host": {
+      "path": "src/Masroof.Ecommerce.HttpApi.Host/Masroof.Ecommerce.HttpApi.Host.abppkg",
+      "folder": "src"
+    },
+    "Masroof.Ecommerce.Domain": {
+      "path": "src/Masroof.Ecommerce.Domain/Masroof.Ecommerce.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}

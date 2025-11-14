@@ -2,19 +2,46 @@
 
 ## ✅ **FULLY IMPLEMENTED - Backend + Frontend**
 
+## ✨ **What's New** (Latest Update)
+
+### **Coupon System** 💳
+- Complete coupon entity with validation logic (percentage/fixed discounts)
+- Coupon validation in shopping cart with real-time discount calculation
+- 5 pre-seeded sample coupons (WELCOME10, SUMMER15, SAVE25, VIP20, FLASH30)
+- Supports min order amount, max discount cap, usage limits, and expiry dates
+
+### **Admin Dashboard** 📊
+- Comprehensive statistics API with real-time data
+- Visual charts and progress bars for orders by status
+- Revenue metrics with growth percentage indicators
+- Product inventory statistics (total, active, out of stock, low stock)
+- Top 5 selling products and top 5 customers
+- Recent orders table with status badges
+- Customer metrics (total, new this month, VIP)
+
+### **Coupon Management UI** 🎫
+- Full CRUD operations for coupon management
+- Modal-based create/edit forms with validation
+- Advanced filtering (status: all/active/inactive/expired, search)
+- Usage tracking and remaining uses display
+- Activate/Deactivate toggle for coupons
+- Comprehensive coupon details in responsive table
+
 ---
 
 ## 📊 **What's Included**
 
 ### **Backend - 100% Complete** ✅
-- ✅ 7 Domain entities with business logic
-- ✅ 7 Application services
+- ✅ 8 Domain entities with business logic
+- ✅ 9 Application services
 - ✅ EF Core configuration
-- ✅ 100+ API endpoints
+- ✅ 110+ API endpoints
 - ✅ Permission system
 - ✅ Data seeding
 - ✅ AutoMapper
 - ✅ Complete documentation
+- ✅ Coupon system with validation
+- ✅ Dashboard statistics API
 
 ### **Frontend - Core Features Complete** ✅
 - ✅ TypeScript models & interfaces
@@ -22,6 +49,8 @@
 - ✅ Product catalog with filters
 - ✅ Shopping cart with live updates
 - ✅ Customer order history
+- ✅ Admin dashboard with charts
+- ✅ Coupon management UI (CRUD)
 - ✅ Responsive Bootstrap 5 UI
 - ✅ Smart UX patterns
 
@@ -89,6 +118,8 @@ npm start
 - ✅ Order status updates
 - ✅ Payment processing
 - ✅ Refunds
+- ✅ **Admin Dashboard** with statistics and charts
+- ✅ **Coupon Management** (Create, Edit, Delete, Activate/Deactivate)
 
 ### **Security**
 - ✅ Permission-based auth
@@ -116,7 +147,9 @@ Masroof.Ecommerce/
 │       └── ecommerce/           ✅ UI components
 │           ├── product-catalog/ ✅ Product listing
 │           ├── shopping-cart/   ✅ Cart UI
-│           └── my-orders/       ✅ Order history
+│           ├── my-orders/       ✅ Order history
+│           ├── admin-dashboard/ ✅ Admin dashboard ✨ NEW
+│           └── coupon-management/ ✅ Coupon CRUD ✨ NEW
 │
 └── Documentation/
     ├── FINAL_IMPLEMENTATION_SUMMARY.md
@@ -133,14 +166,23 @@ Masroof.Ecommerce/
 - `/ecommerce/products` - Product catalog
 - `/ecommerce/cart` - Shopping cart
 - `/ecommerce/my-orders` - Order history (authenticated)
+- `/ecommerce/admin-dashboard` - Admin dashboard with charts ✨ NEW
+- `/ecommerce/coupon-management` - Coupon CRUD management ✨ NEW
 - `/dashboard` - Admin dashboard
 - `/account/login` - Login page
 
-### **API Endpoints** (100+)
+### **API Endpoints** (110+)
 - `GET /api/app/product/featured-products`
 - `GET /api/app/product/products-by-category/{id}`
 - `POST /api/app/shopping-cart/add-item`
 - `POST /api/app/order`
+- `GET /api/app/dashboard/stats` - ✨ Dashboard statistics
+- `GET /api/app/coupon` - ✨ List coupons
+- `POST /api/app/coupon` - ✨ Create coupon
+- `PUT /api/app/coupon/{id}` - ✨ Update coupon
+- `DELETE /api/app/coupon/{id}` - ✨ Delete coupon
+- `POST /api/app/coupon/{id}/activate` - ✨ Activate coupon
+- `POST /api/app/coupon/{id}/deactivate` - ✨ Deactivate coupon
 - And many more... (see Swagger)
 
 ---
@@ -161,6 +203,13 @@ Masroof.Ecommerce/
 5. Sony WH-1000XM5 - $399.99
 6. AirPods Pro 2 - $249.99
 
+### **Coupons** (5 active) ✨ NEW
+1. **WELCOME10** - 10% off (min $50, max 100 uses)
+2. **SUMMER15** - 15% off (min $100, max $50 discount)
+3. **SAVE25** - $25 off (min $200)
+4. **VIP20** - 20% off for VIP customers (min $500)
+5. **FLASH30** - 30% off flash sale (7 days, max $100 discount)
+
 ---
 
 ## 🎨 **UI Features**
@@ -171,19 +220,23 @@ Masroof.Ecommerce/
 - **Real-time Updates** - Cart updates instantly
 - **Status Indicators** - Color-coded order status
 - **Empty States** - Helpful messages and CTAs
-- **Loading States** - Better UX (to be enhanced)
+- **Loading States** - Better UX
+- **Admin Dashboard** ✨ - Statistics cards, charts, and visualizations
+- **Data Visualizations** ✨ - Progress bars, tables, and metric cards
+- **Modal Forms** ✨ - Create/Edit coupons with comprehensive validation
 
 ---
 
 ## 📊 **Statistics**
 
-- **Total Commits**: 30+
-- **Backend Code**: ~6,000 lines
-- **Frontend Code**: ~1,000 lines
-- **API Endpoints**: 100+
-- **Components**: 3 main + more to come
-- **Services**: 12 (7 backend + 5 frontend)
-- **Models/DTOs**: 30+
+- **Total Commits**: 35+
+- **Backend Code**: ~7,500 lines
+- **Frontend Code**: ~2,500 lines
+- **API Endpoints**: 110+
+- **Components**: 6 (3 customer + 3 admin)
+- **Services**: 16 (9 backend + 7 frontend)
+- **Models/DTOs**: 40+
+- **Entities**: 8 (Product, Category, Customer, Address, Order, Payment, ShoppingCart, Coupon)
 
 ---
 

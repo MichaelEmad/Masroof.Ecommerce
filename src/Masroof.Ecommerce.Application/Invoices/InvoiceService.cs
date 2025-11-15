@@ -359,9 +359,10 @@ public class InvoiceService : IInvoiceService
 
             column.Item().PaddingTop(5).Text(text =>
             {
+                text.DefaultTextStyle(TextStyle.Default.FontSize(8).FontColor(Colors.Grey.Darken1));
                 text.Span("Masroof E-Commerce | 123 Business Street, Suite 100, Business City, BC 12345 | ");
                 text.Span("Email: support@masroof.com | Phone: +1 (555) 123-4567");
-            }).FontSize(8).FontColor(Colors.Grey.Darken1);
+            });
 
             column.Item().PaddingTop(5).Text("This is a computer-generated invoice and does not require a signature.")
                 .FontSize(7)

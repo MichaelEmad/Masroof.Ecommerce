@@ -56,9 +56,9 @@ public class OrderPaymentService : ApplicationService
                 {
                     Code = order.OrderNumber,
                     Name = $"Order {order.OrderNumber}",
-                    UnitPrice = order.TotalAmount,
+                    UnitPrice = (float)order.TotalAmount,
                     Count = 1,
-                    TotalPrice = order.TotalAmount
+                    TotalPrice = (float)order.TotalAmount
                 }
             }
         };

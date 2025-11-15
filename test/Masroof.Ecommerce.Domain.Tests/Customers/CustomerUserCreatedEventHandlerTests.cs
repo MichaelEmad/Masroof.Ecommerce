@@ -9,6 +9,7 @@ using Volo.Abp.EventBus.Local;
 using Volo.Abp.Guids;
 using Volo.Abp.Identity;
 using Volo.Abp.Modularity;
+using Volo.Abp.MultiTenancy;
 using Xunit;
 
 namespace Masroof.Ecommerce.Tests.Customers;
@@ -25,6 +26,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
     private readonly IRepository<ShoppingCart, Guid> _shoppingCartRepository;
     private readonly ILocalEventBus _localEventBus;
     private readonly IGuidGenerator _guidGenerator;
+    private readonly ICurrentTenant _currentTenant;
 
     protected CustomerUserCreatedEventHandlerTests()
     {
@@ -34,6 +36,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         _shoppingCartRepository = GetRequiredService<IRepository<ShoppingCart, Guid>>();
         _localEventBus = GetRequiredService<ILocalEventBus>();
         _guidGenerator = GetRequiredService<IGuidGenerator>();
+        _currentTenant = GetRequiredService<ICurrentTenant>();
     }
 
     [Fact]
@@ -54,7 +57,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
                 _guidGenerator.Create(),
                 userName,
                 email,
-                CurrentTenant.Id
+                _currentTenant.Id
             );
             user.SetProperty("Name", displayName);
 
@@ -99,7 +102,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
                 _guidGenerator.Create(),
                 userName,
                 email,
-                CurrentTenant.Id
+                _currentTenant.Id
             );
 
             await _identityUserManager.CreateAsync(user);
@@ -143,7 +146,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
                 _guidGenerator.Create(),
                 userName,
                 email,
-                CurrentTenant.Id
+                _currentTenant.Id
             );
 
             await _identityUserManager.CreateAsync(user);
@@ -180,7 +183,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
                 _guidGenerator.Create(),
                 userName,
                 email,
-                CurrentTenant.Id
+                _currentTenant.Id
             );
             user.SetProperty("Name", displayName);
 
@@ -217,7 +220,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
                 _guidGenerator.Create(),
                 userName,
                 email,
-                CurrentTenant.Id
+                _currentTenant.Id
             );
 
             // Confirm the email
@@ -256,7 +259,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
                 _guidGenerator.Create(),
                 userName,
                 email,
-                CurrentTenant.Id
+                _currentTenant.Id
             );
 
             user.SetPhoneNumber(phoneNumber, true);
@@ -293,7 +296,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
                 _guidGenerator.Create(),
                 userName,
                 email,
-                CurrentTenant.Id
+                _currentTenant.Id
             );
 
             await _identityUserManager.CreateAsync(user);

@@ -2,183 +2,33 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { ConfigStateService } from '@abp/ng.core';
-import { CustomerService } from '../../proxy/customers/customer.service';
+import { ConfigStateService, AuthService } from '@abp/ng.core';
+import { ToasterService } from '@abp/ng.theme.shared';
+import { finalize } from 'rxjs/operators';
+import { AccountService, RegisterDto } from '@volo/abp.ng.account/public/proxy';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
-  template: `
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-          <div class="card shadow">
-            <div class="card-body p-5">
-              <div class="text-center mb-4">
-                <h2>Create Account</h2>
-                <p class="text-muted">Join us and start shopping!</p>
-              </div>
-
-              <div class="alert alert-info" role="alert">
-                <i class="bi bi-info-circle me-2"></i>
-                <strong>Note:</strong> This will redirect you to the ABP registration page. After successful registration,
-                a customer profile will be automatically created for you.
-              </div>
-
-              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label for="firstName" class="form-label">First Name *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="firstName"
-                      formControlName="firstName"
-                      [class.is-invalid]="isFieldInvalid('firstName')">
-                    <div class="invalid-feedback" *ngIf="isFieldInvalid('firstName')">
-                      First name is required
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <label for="lastName" class="form-label">Last Name *</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="lastName"
-                      formControlName="lastName"
-                      [class.is-invalid]="isFieldInvalid('lastName')">
-                    <div class="invalid-feedback" *ngIf="isFieldInvalid('lastName')">
-                      Last name is required
-                    </div>
-                  </div>
-
-                  <div class="col-12">
-                    <label for="email" class="form-label">Email Address *</label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      formControlName="email"
-                      [class.is-invalid]="isFieldInvalid('email')">
-                    <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
-                      <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
-                      <span *ngIf="registerForm.get('email')?.errors?.['email']">Invalid email format</span>
-                    </div>
-                  </div>
-
-                  <div class="col-12">
-                    <label for="phoneNumber" class="form-label">Phone Number</label>
-                    <input
-                      type="tel"
-                      class="form-control"
-                      id="phoneNumber"
-                      formControlName="phoneNumber"
-                      placeholder="+1 (555) 123-4567">
-                  </div>
-
-                  <div class="col-12">
-                    <label for="password" class="form-label">Password *</label>
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="password"
-                      formControlName="password"
-                      [class.is-invalid]="isFieldInvalid('password')">
-                    <div class="invalid-feedback" *ngIf="isFieldInvalid('password')">
-                      <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
-                      <span *ngIf="registerForm.get('password')?.errors?.['minlength']">
-                        Password must be at least 6 characters
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="col-12">
-                    <label for="confirmPassword" class="form-label">Confirm Password *</label>
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="confirmPassword"
-                      formControlName="confirmPassword"
-                      [class.is-invalid]="isFieldInvalid('confirmPassword')">
-                    <div class="invalid-feedback" *ngIf="isFieldInvalid('confirmPassword')">
-                      <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">
-                        Please confirm your password
-                      </span>
-                      <span *ngIf="registerForm.get('confirmPassword')?.errors?.['passwordMismatch']">
-                        Passwords do not match
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="d-grid gap-3 mt-4">
-                  <button
-                    type="submit"
-                    class="btn btn-primary btn-lg"
-                    [disabled]="loading">
-                    <span *ngIf="!loading">
-                      <i class="bi bi-person-plus me-2"></i>
-                      Create Account
-                    </span>
-                    <span *ngIf="loading">
-                      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                      Redirecting...
-                    </span>
-                  </button>
-
-                  <div class="text-center">
-                    <span class="text-muted">Already have an account?</span>
-                    <a [routerLink]="['/ecommerce/login']" class="ms-2 fw-bold">
-                      Sign In
-                    </a>
-                  </div>
-
-                  <hr class="my-2">
-
-                  <div class="text-center">
-                    <a [routerLink]="['/ecommerce/products']" class="text-muted">
-                      <i class="bi bi-arrow-left me-2"></i>
-                      Continue Shopping
-                    </a>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .card {
-      border: none;
-      border-radius: 15px;
-    }
-
-    .btn-lg {
-      padding: 12px 24px;
-      font-size: 1.1rem;
-    }
-
-    .form-label {
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-  `]
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   loading = false;
+  submitted = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private customerService: CustomerService,
-    private configState: ConfigStateService
+    private accountService: AccountService,
+    private authService: AuthService,
+    private configState: ConfigStateService,
+    private toasterService: ToasterService
   ) {
     this.registerForm = this.fb.group({
+      userName: ['', [Validators.required, Validators.minLength(3)]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
@@ -211,10 +61,12 @@ export class RegisterComponent implements OnInit {
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.registerForm.get(fieldName);
-    return !!(field && field.invalid && (field.dirty || field.touched));
+    return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
   }
 
   onSubmit() {
+    this.submitted = true;
+
     if (this.registerForm.invalid) {
       Object.keys(this.registerForm.controls).forEach(key => {
         this.registerForm.get(key)?.markAsTouched();
@@ -224,27 +76,116 @@ export class RegisterComponent implements OnInit {
 
     this.loading = true;
 
-    // Store registration data in sessionStorage to create customer profile after ABP registration
-    const registrationData = {
-      firstName: this.registerForm.value.firstName,
-      lastName: this.registerForm.value.lastName,
-      phoneNumber: this.registerForm.value.phoneNumber,
-      email: this.registerForm.value.email
+    const formValue = this.registerForm.value;
+
+    // Create ABP RegisterDto
+    const registerDto: RegisterDto = {
+      userName: formValue.userName,
+      emailAddress: formValue.email,
+      password: formValue.password,
+      appName: 'Angular',
+      extraProperties: {
+        FirstName: formValue.firstName,
+        LastName: formValue.lastName,
+        PhoneNumber: formValue.phoneNumber || ''
+      }
     };
-    sessionStorage.setItem('pendingCustomerProfile', JSON.stringify(registrationData));
 
-    // Redirect to ABP's registration page
-    // In a real implementation, you would need to:
-    // 1. Call ABP's registration API
-    // 2. Create customer profile after successful registration
-    // 3. Handle the redirect properly
+    // Call ABP Account registration API
+    this.accountService.register(registerDto)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.toasterService.success(
+            'Registration successful! You can now log in with your credentials.',
+            'Success',
+            { life: 5000 }
+          );
 
-    // For now, redirect to ABP's register page
-    const registerUrl = '/account/register';
-    const returnUrl = encodeURIComponent('/ecommerce/products');
+          // Auto-login after registration
+          this.performLogin(formValue.userName, formValue.password);
+        },
+        error: (error) => {
+          const errorMessage = error?.error?.error?.message || 'Registration failed. Please try again.';
+          this.toasterService.error(errorMessage, 'Registration Error', { life: 10000 });
+          this.loading = false;
+        }
+      });
+  }
 
-    // In production, you would want to integrate with ABP's account module
-    // and handle the customer profile creation in a registration event handler
-    window.location.href = `${registerUrl}?returnUrl=${returnUrl}`;
+  private performLogin(username: string, password: string) {
+    this.loading = true;
+
+    this.authService.login({
+      username,
+      password,
+      rememberMe: true
+    }).subscribe({
+      next: () => {
+        this.toasterService.success(
+          'Welcome! Your account has been created successfully.',
+          'Welcome',
+          { life: 3000 }
+        );
+
+        // Customer profile is automatically created by CustomerUserCreatedEventHandler
+        // on the backend when the user is created
+        setTimeout(() => {
+          this.router.navigate(['/ecommerce/products']);
+        }, 500);
+      },
+      error: () => {
+        this.toasterService.info(
+          'Registration successful! Please log in to continue.',
+          'Please Log In'
+        );
+        this.router.navigate(['/ecommerce/login']);
+        this.loading = false;
+      }
+    });
+  }
+
+  getErrorMessage(fieldName: string): string {
+    const field = this.registerForm.get(fieldName);
+
+    if (!field || !field.errors || !this.isFieldInvalid(fieldName)) {
+      return '';
+    }
+
+    if (field.errors['required']) {
+      return `${this.getFieldLabel(fieldName)} is required`;
+    }
+
+    if (field.errors['email']) {
+      return 'Invalid email format';
+    }
+
+    if (field.errors['minlength']) {
+      const minLength = field.errors['minlength'].requiredLength;
+      return `${this.getFieldLabel(fieldName)} must be at least ${minLength} characters`;
+    }
+
+    if (field.errors['passwordMismatch']) {
+      return 'Passwords do not match';
+    }
+
+    return 'Invalid value';
+  }
+
+  private getFieldLabel(fieldName: string): string {
+    const labels: { [key: string]: string } = {
+      userName: 'Username',
+      firstName: 'First name',
+      lastName: 'Last name',
+      email: 'Email',
+      phoneNumber: 'Phone number',
+      password: 'Password',
+      confirmPassword: 'Confirm password'
+    };
+    return labels[fieldName] || fieldName;
   }
 }

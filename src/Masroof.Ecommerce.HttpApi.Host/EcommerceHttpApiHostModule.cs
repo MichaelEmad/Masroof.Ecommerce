@@ -47,6 +47,7 @@ using Volo.Abp.Account.Public.Web.ExternalProviders;
 using Volo.Abp.Account.Public.Web;
 using Volo.Abp.Account.Public.Web.Impersonation;
 using Volo.Payment.Stripe;
+using Masroof.Ecommerce.Filters;
 
 namespace Masroof.Ecommerce;
 
@@ -124,6 +125,7 @@ public class EcommerceHttpApiHostModule : AbpModule
         ConfigureUrls(configuration);
         ConfigureBundles();
         ConfigureConventionalControllers();
+        ConfigureMvc(context);
         ConfigureExternalProviders(context);
         ConfigureImpersonation(context, configuration);
         ConfigureHealthChecks(context);
@@ -206,6 +208,15 @@ public class EcommerceHttpApiHostModule : AbpModule
         Configure<AbpAspNetCoreMvcOptions>(options =>
         {
             options.ConventionalControllers.Create(typeof(EcommerceApplicationModule).Assembly);
+        });
+    }
+
+    private void ConfigureMvc(ServiceConfigurationContext context)
+    {
+        context.Services.AddControllers(options =>
+        {
+            // Register the global exception filter
+            options.Filters.Add<GlobalExceptionFilter>();
         });
     }
 

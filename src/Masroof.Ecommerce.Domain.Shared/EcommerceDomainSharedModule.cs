@@ -52,9 +52,17 @@ public class EcommerceDomainSharedModule : AbpModule
                 .AddVirtualJson("/Localization/Ecommerce");
 
             options.DefaultResourceType = typeof(EcommerceResource);
-            
-            options.Languages.Add(new LanguageInfo("en", "en", "English")); 
-            options.Languages.Add(new LanguageInfo("ar", "ar", "Arabic")); 
+
+            // Configure supported languages
+            options.Languages.Add(new LanguageInfo("en", "en", "English", flagIcon: "famfamfam-flags us"));
+            options.Languages.Add(new LanguageInfo(
+                code: "ar",
+                uiCultureName: "ar",
+                displayName: "العربية",
+                flagIcon: "famfamfam-flags sa")
+            {
+                IsRightToLeft = true // Enable RTL support for Arabic
+            });
 
         });
         

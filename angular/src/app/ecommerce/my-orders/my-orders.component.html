@@ -1,0 +1,117 @@
+<div class="container mt-4">
+  <h2 class="mb-4">
+    <i class="bi bi-box-seam me-2"></i>
+    My Orders
+  </h2>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Orders List -->
+  <div class="row" *ngIf="!loading">
+    <div class="col-12">
+      <div *ngFor="let order of orders" class="card mb-3 order-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <strong>Order #{{ order.orderNumber }}</strong>
+            <small class="text-muted ms-3">
+              {{ order.creationTime | date:'medium' }}
+            </small>
+          </div>
+          <span [class]="'badge ' + getStatusBadgeClass(order.status)">
+            {{ getStatusText(order.status) }}
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8">
+              <h6>Items:</h6>
+              <ul class="list-unstyled">
+                <li *ngFor="let item of order.items" class="mb-2">
+                  <div class="d-flex">
+                    <img *ngIf="item.imageUrl"
+                         [src]="item.imageUrl"
+                         class="me-3 rounded"
+                         [alt]="item.productName">
+                    <div>
+                      <strong>{{ item.productName }}</strong>
+                      <br>
+                      <small class="text-muted">
+                        Qty: {{ item.quantity }} × ${{ item.unitPrice | number:'1.2-2' }} = ${{ item.totalPrice | number:'1.2-2' }}
+                      </small>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <hr>
+              <div>
+                <strong>Shipping Address:</strong><br>
+                {{ order.shippingFullName }}<br>
+                {{ order.shippingAddressLine1 }}<br>
+                <span *ngIf="order.shippingAddressLine2">{{ order.shippingAddressLine2 }}<br></span>
+                {{ order.shippingCity }}, {{ order.shippingState }} {{ order.shippingPostalCode }}<br>
+                {{ order.shippingCountry }}
+              </div>
+              <div *ngIf="order.trackingNumber" class="mt-2">
+                <strong>Tracking:</strong> {{ order.trackingNumber }}
+                <span *ngIf="order.shippingCarrier" class="ms-2 badge bg-info">{{ order.shippingCarrier }}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card bg-light summary-card">
+                <div class="card-body">
+                  <h6>Order Summary</h6>
+                  <div class="d-flex justify-content-between mb-1">
+                    <span>Subtotal:</span>
+                    <span>${{ order.subTotal | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-1" *ngIf="order.discountAmount > 0">
+                    <span class="text-success">Discount:</span>
+                    <span class="text-success">-${{ order.discountAmount | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-1">
+                    <span>Shipping:</span>
+                    <span>${{ order.shippingCost | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-1">
+                    <span>Tax:</span>
+                    <span>${{ order.tax | number:'1.2-2' }}</span>
+                  </div>
+                  <hr>
+                  <div class="d-flex justify-content-between">
+                    <strong>Total:</strong>
+                    <strong class="text-primary">${{ order.totalAmount | number:'1.2-2' }}</strong>
+                  </div>
+                </div>
+              </div>
+              <button
+                class="btn btn-success btn-sm mt-2 w-100"
+                (click)="downloadInvoice(order)">
+                <i class="bi bi-file-pdf me-2"></i>Download Invoice
+              </button>
+              <button *ngIf="canCancel(order)"
+                class="btn btn-danger btn-sm mt-2 w-100"
+                (click)="cancelOrder(order.id)">
+                <i class="bi bi-x-circle me-2"></i>Cancel Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="orders.length === 0" class="text-center py-5">
+        <i class="bi bi-inbox empty-icon"></i>
+        <h4 class="mt-3">No orders yet</h4>
+        <p class="text-muted">Start shopping to see your orders here!</p>
+        <a routerLink="/ecommerce/products" class="btn btn-primary">
+          <i class="bi bi-bag me-2"></i>Browse Products
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -7,171 +7,8 @@ import { AddressDto, CreateUpdateAddressDto, AddressType } from '../../proxy/add
   selector: 'app-address-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="isVisible">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              {{ address ? 'Edit Address' : 'Add New Address' }}
-            </h5>
-            <button type="button" class="btn-close" (click)="close()" aria-label="Close"></button>
-          </div>
-
-          <form [formGroup]="addressForm" (ngSubmit)="onSubmit()">
-            <div class="modal-body">
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label for="fullName" class="form-label">Full Name *</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="fullName"
-                    formControlName="fullName"
-                    [class.is-invalid]="isFieldInvalid('fullName')">
-                  <div class="invalid-feedback">Full name is required</div>
-                </div>
-
-                <div class="col-md-6">
-                  <label for="phoneNumber" class="form-label">Phone Number *</label>
-                  <input
-                    type="tel"
-                    class="form-control"
-                    id="phoneNumber"
-                    formControlName="phoneNumber"
-                    [class.is-invalid]="isFieldInvalid('phoneNumber')">
-                  <div class="invalid-feedback">Phone number is required</div>
-                </div>
-
-                <div class="col-12">
-                  <label for="addressLine1" class="form-label">Address Line 1 *</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="addressLine1"
-                    formControlName="addressLine1"
-                    placeholder="Street address, P.O. box"
-                    [class.is-invalid]="isFieldInvalid('addressLine1')">
-                  <div class="invalid-feedback">Address line 1 is required</div>
-                </div>
-
-                <div class="col-12">
-                  <label for="addressLine2" class="form-label">Address Line 2</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="addressLine2"
-                    formControlName="addressLine2"
-                    placeholder="Apartment, suite, unit, building, floor, etc.">
-                </div>
-
-                <div class="col-md-6">
-                  <label for="city" class="form-label">City *</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="city"
-                    formControlName="city"
-                    [class.is-invalid]="isFieldInvalid('city')">
-                  <div class="invalid-feedback">City is required</div>
-                </div>
-
-                <div class="col-md-6">
-                  <label for="state" class="form-label">State/Province *</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="state"
-                    formControlName="state"
-                    [class.is-invalid]="isFieldInvalid('state')">
-                  <div class="invalid-feedback">State is required</div>
-                </div>
-
-                <div class="col-md-6">
-                  <label for="postalCode" class="form-label">Postal Code *</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="postalCode"
-                    formControlName="postalCode"
-                    [class.is-invalid]="isFieldInvalid('postalCode')">
-                  <div class="invalid-feedback">Postal code is required</div>
-                </div>
-
-                <div class="col-md-6">
-                  <label for="country" class="form-label">Country *</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="country"
-                    formControlName="country"
-                    [class.is-invalid]="isFieldInvalid('country')">
-                  <div class="invalid-feedback">Country is required</div>
-                </div>
-
-                <div class="col-md-6">
-                  <label for="addressType" class="form-label">Address Type *</label>
-                  <select
-                    class="form-select"
-                    id="addressType"
-                    formControlName="addressType"
-                    [class.is-invalid]="isFieldInvalid('addressType')">
-                    <option [value]="AddressType.Shipping">Shipping</option>
-                    <option [value]="AddressType.Billing">Billing</option>
-                    <option [value]="AddressType.Both">Both</option>
-                  </select>
-                  <div class="invalid-feedback">Address type is required</div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="form-check mt-4">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      id="isDefault"
-                      formControlName="isDefault">
-                    <label class="form-check-label" for="isDefault">
-                      Set as default address
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" (click)="close()">
-                Cancel
-              </button>
-              <button type="submit" class="btn btn-primary" [disabled]="loading">
-                <span *ngIf="!loading">
-                  {{ address ? 'Update Address' : 'Add Address' }}
-                </span>
-                <span *ngIf="loading">
-                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                  Saving...
-                </span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="modal-backdrop fade show" *ngIf="isVisible" (click)="close()"></div>
-  `,
-  styles: [`
-    .modal.show {
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .form-label {
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-
-    .modal-content {
-      border-radius: 10px;
-    }
-  `]
+  templateUrl: './address-form.component.html',
+  styleUrls: ['./address-form.component.scss']
 })
 export class AddressFormComponent implements OnInit {
   @Input() address?: AddressDto;
@@ -246,7 +83,10 @@ export class AddressFormComponent implements OnInit {
   }
 
   close() {
-    this.addressForm.reset();
+    this.addressForm.reset({
+      addressType: AddressType.Both,
+      isDefault: false
+    });
     this.loading = false;
     this.onCancel.emit();
   }

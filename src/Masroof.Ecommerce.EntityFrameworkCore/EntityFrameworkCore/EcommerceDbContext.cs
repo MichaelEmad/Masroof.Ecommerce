@@ -75,6 +75,7 @@ public class EcommerceDbContext :
     // Payment Module - Required by IPaymentDbContext
     public DbSet<PaymentRequest> PaymentRequests { get; set; }
     public DbSet<Plan> Plans { get; set; }
+    public DbSet<GatewayPlan> GatewayPlans { get; set; }
 
     #endregion
 

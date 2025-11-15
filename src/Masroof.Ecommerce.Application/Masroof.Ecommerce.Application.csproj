@@ -27,8 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Embed email templates so they're included in compiled assembly -->
-    <EmbeddedResource Include="Emails\Templates\*.html" />
+    <!-- Copy email templates to output directory so they can be loaded at runtime -->
+    <None Include="Emails\Templates\*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

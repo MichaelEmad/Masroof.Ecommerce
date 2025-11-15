@@ -32,7 +32,7 @@ public class OrderPaymentService : ApplicationService
     /// <param name="orderId">The order ID to create payment for</param>
     /// <param name="gateway">Payment gateway (e.g., "Stripe")</param>
     /// <returns>Payment request DTO with redirect URL for payment</returns>
-    public virtual async Task<PaymentRequestDto> CreatePaymentRequestForOrderAsync(
+    public virtual async Task<PaymentRequestWithDetailsDto> CreatePaymentRequestForOrderAsync(
         Guid orderId,
         string gateway = "Stripe")
     {
@@ -68,7 +68,7 @@ public class OrderPaymentService : ApplicationService
         createDto.ExtraProperties.Add("OrderNumber", order.OrderNumber);
         createDto.ExtraProperties.Add("CustomerId", order.CustomerId.ToString());
 
-        PaymentRequestDto paymentRequest = await _paymentRequestAppService.CreateAsync(createDto);
+        var paymentRequest = await _paymentRequestAppService.CreateAsync(createDto);
 
         return paymentRequest;
     }
@@ -148,7 +148,7 @@ public class OrderPaymentService : ApplicationService
     /// In production, you should store the payment request ID with the order
     /// for more efficient lookup.
     /// </remarks>
-    public virtual async Task<PaymentRequestDto?> GetPaymentStatusForOrderAsync(Guid orderId)
+    public virtual async Task<PaymentRequestWithDetailsDto?> GetPaymentStatusForOrderAsync(Guid orderId)
     {
         // This is a simplified implementation
         // ABP Payment module doesn't provide query by extra properties
@@ -159,7 +159,7 @@ public class OrderPaymentService : ApplicationService
 
         // For now, this method returns null
         // You should enhance this based on your requirements
-        return await Task.FromResult<PaymentRequestDto?>(null);
+        return await Task.FromResult<PaymentRequestWithDetailsDto?>(null);
     }
 
     /// <summary>

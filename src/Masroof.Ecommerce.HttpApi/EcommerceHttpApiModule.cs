@@ -23,7 +23,7 @@ namespace Masroof.Ecommerce;
     typeof(AbpOpenIddictProHttpApiModule),
     typeof(AbpAccountPublicHttpApiModule),
     typeof(AbpFeatureManagementHttpApiModule),
-    typeof(PaymentHttpApiModule)
+    typeof(AbpPaymentHttpApiModule)
     )]
 public class EcommerceHttpApiModule : AbpModule
 {

@@ -223,10 +223,11 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
                 _currentTenant.Id
             );
 
-            // Confirm the email
-            user.EmailConfirmed = true;
-
             await _identityUserManager.CreateAsync(user);
+
+            // Confirm the email using UserManager
+            var token = await _identityUserManager.GenerateEmailConfirmationTokenAsync(user);
+            await _identityUserManager.ConfirmEmailAsync(user, token);
             await _localEventBus.PublishAsync(new EntityCreatedEventData<IdentityUser>(user));
         });
 

@@ -6,7 +6,6 @@ using Masroof.Ecommerce.Addresses;
 using Masroof.Ecommerce.Customers;
 using Masroof.Ecommerce.Emails;
 using Masroof.Ecommerce.Invoices;
-using Masroof.Ecommerce.Payments;
 using Masroof.Ecommerce.Permissions;
 using Masroof.Ecommerce.Products;
 using Masroof.Ecommerce.ShoppingCarts;
@@ -31,7 +30,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly ICurrentUser _currentUser;
     private readonly IEmailService _emailService;
     private readonly IInvoiceService _invoiceService;
-    private readonly IPaymentService _paymentService;
 
     public OrderAppService(
         IRepository<Order, Guid> orderRepository,
@@ -41,8 +39,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IRepository<Product, Guid> productRepository,
         ICurrentUser currentUser,
         IEmailService emailService,
-        IInvoiceService invoiceService,
-        IPaymentService paymentService)
+        IInvoiceService invoiceService)
     {
         _orderRepository = orderRepository;
         _customerRepository = customerRepository;
@@ -52,7 +49,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _currentUser = currentUser;
         _emailService = emailService;
         _invoiceService = invoiceService;
-        _paymentService = paymentService;
     }
 
     [Authorize(EcommercePermissions.Orders.Default)]
@@ -207,19 +203,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         // Send order confirmation email
         await _emailService.SendOrderConfirmationEmailAsync(order, customer);
 
-        // Create Stripe PaymentIntent
-        var paymentIntentResult = await _paymentService.CreatePaymentIntentAsync(order, customer.Email);
-
-        var orderDto = ObjectMapper.Map<Order, OrderDto>(order);
-
-        // Add payment information to the order DTO
-        if (paymentIntentResult.IsSuccessful)
-        {
-            orderDto.PaymentClientSecret = paymentIntentResult.ClientSecret;
-            orderDto.PaymentIntentId = paymentIntentResult.PaymentIntentId;
-        }
-
-        return orderDto;
+        return ObjectMapper.Map<Order, OrderDto>(order);
     }
 
     [Authorize(EcommercePermissions.Orders.UpdateStatus)]

@@ -23,7 +23,6 @@
     <PackageReference Include="Volo.Abp.AuditLogging.Application" Version="9.3.6" />
     <PackageReference Include="Volo.Abp.OpenIddict.Pro.Application" Version="9.3.6" />
     <PackageReference Include="QuestPDF" Version="2024.10.3" />
-    <PackageReference Include="Stripe.net" Version="47.4.0" />
   </ItemGroup>
 
 </Project>

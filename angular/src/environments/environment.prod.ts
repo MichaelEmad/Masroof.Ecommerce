@@ -31,9 +31,6 @@ export const environment = {
       rootNamespace: 'AbpAccountPublic',
     },
   },
-  stripe: {
-    publishableKey: 'pk_live_YOUR_LIVE_PUBLISHABLE_KEY_HERE',
-  },
   remoteEnv: {
     url: '/getEnvConfig',
     mergeStrategy: 'deepmerge'

@@ -31,7 +31,4 @@ export const environment = {
       rootNamespace: 'AbpAccountPublic',
     },
   },
-  stripe: {
-    publishableKey: 'pk_test_YOUR_PUBLISHABLE_KEY_HERE',
-  },
 } as Environment;

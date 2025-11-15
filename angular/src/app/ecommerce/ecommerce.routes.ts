@@ -35,18 +35,6 @@ export const ecommerceRoutes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'payment/:orderId',
-    loadComponent: () =>
-      import('./payment/payment.component').then(m => m.PaymentComponent),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'payment-confirmation/:orderId',
-    loadComponent: () =>
-      import('./payment-confirmation/payment-confirmation.component').then(m => m.PaymentConfirmationComponent),
-    canActivate: [authGuard],
-  },
-  {
     path: 'my-orders',
     loadComponent: () =>
       import('./my-orders/my-orders.component').then(m => m.MyOrdersComponent),

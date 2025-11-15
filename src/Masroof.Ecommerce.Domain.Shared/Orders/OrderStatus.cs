@@ -3,9 +3,10 @@ namespace Masroof.Ecommerce.Orders;
 public enum OrderStatus
 {
     Pending = 0,
-    Processing = 1,
-    Shipped = 2,
-    Delivered = 3,
-    Cancelled = 4,
-    Refunded = 5
+    Confirmed = 1,
+    Processing = 2,
+    Shipped = 3,
+    Delivered = 4,
+    Cancelled = 5,
+    Refunded = 6
 }

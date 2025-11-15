@@ -27,8 +27,7 @@ namespace Masroof.Ecommerce;
     typeof(AbpOpenIddictProDomainSharedModule),
     typeof(AbpGlobalFeaturesModule),
     typeof(BlobStoringDatabaseDomainSharedModule),
-    typeof(PaymentDomainSharedModule)
-    )]
+    typeof(AbpPaymentDomainSharedModule))]
 public class EcommerceDomainSharedModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -55,10 +54,7 @@ public class EcommerceDomainSharedModule : AbpModule
 
             // Configure supported languages
             options.Languages.Add(new LanguageInfo("en", "en", "English"));
-            options.Languages.Add(new LanguageInfo("ar", "ar", "العربية")
-            {
-                IsRightToLeft = true // Enable RTL support for Arabic
-            });
+            options.Languages.Add(new LanguageInfo("ar", "ar", "العربية"));
 
         });
         

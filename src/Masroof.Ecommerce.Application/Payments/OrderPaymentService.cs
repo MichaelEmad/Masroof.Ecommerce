@@ -44,7 +44,7 @@ public class OrderPaymentService : ApplicationService
         }
 
         // Create payment request using ABP Payment Module
-        var paymentRequest = await _paymentRequestAppService.CreateAsync(new PaymentRequestCreationDto
+        var paymentRequest = await _paymentRequestAppService.CreateAsync(new PaymentRequestCreateDto
         {
             // Convert order total to cents/smallest currency unit for payment gateway
             // Most payment gateways work with integers (cents for USD, etc.)

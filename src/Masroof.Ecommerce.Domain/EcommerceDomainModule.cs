@@ -35,7 +35,7 @@ namespace Masroof.Ecommerce;
     typeof(AbpOpenIddictProDomainModule),
     typeof(VoloAbpCommercialSuiteTemplatesModule),
     typeof(BlobStoringDatabaseDomainModule),
-    typeof(PaymentDomainModule)
+    typeof(AbpPaymentDomainModule)
     )]
 public class EcommerceDomainModule : AbpModule
 {

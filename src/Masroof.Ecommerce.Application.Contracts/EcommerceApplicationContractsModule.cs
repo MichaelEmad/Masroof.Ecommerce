@@ -20,7 +20,7 @@ namespace Masroof.Ecommerce;
     typeof(AbpAuditLoggingApplicationContractsModule),
     typeof(AbpOpenIddictProApplicationContractsModule),
     typeof(AbpPermissionManagementApplicationContractsModule),
-    typeof(PaymentApplicationContractsModule)
+    typeof(AbpPaymentApplicationContractsModule)
 )]
 public class EcommerceApplicationContractsModule : AbpModule
 {

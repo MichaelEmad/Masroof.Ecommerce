@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Masroof.Ecommerce.Customers;
 using Masroof.Ecommerce.ShoppingCarts;
 using Shouldly;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities.Events;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.EventBus.Local;

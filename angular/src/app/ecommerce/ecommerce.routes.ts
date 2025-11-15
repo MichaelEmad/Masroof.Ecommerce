@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from '@abp/ng.core';
+import { authGuard, permissionGuard } from '@abp/ng.core';
 
 export const ecommerceRoutes: Routes = [
   {
@@ -44,31 +44,46 @@ export const ecommerceRoutes: Routes = [
     path: 'admin-dashboard',
     loadComponent: () =>
       import('./admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      requiredPolicy: 'Ecommerce.Dashboard.Host',
+    },
   },
   {
     path: 'admin-products',
     loadComponent: () =>
       import('./admin-products/admin-products.component').then(m => m.AdminProductsComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      requiredPolicy: 'Ecommerce.Products',
+    },
   },
   {
     path: 'admin-categories',
     loadComponent: () =>
       import('./admin-categories/admin-categories.component').then(m => m.AdminCategoriesComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      requiredPolicy: 'Ecommerce.Categories',
+    },
   },
   {
     path: 'admin-orders',
     loadComponent: () =>
       import('./admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      requiredPolicy: 'Ecommerce.Orders',
+    },
   },
   {
     path: 'coupon-management',
     loadComponent: () =>
       import('./coupon-management/coupon-management.component').then(m => m.CouponManagementComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      requiredPolicy: 'Ecommerce.Coupons',
+    },
   },
   {
     path: '',

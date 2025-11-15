@@ -13,6 +13,8 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Payment.EntityFrameworkCore;
+using Volo.Payment.Requests;
+using Volo.Payment.Plans;
 using Masroof.Ecommerce.Products;
 using Masroof.Ecommerce.Categories;
 using Masroof.Ecommerce.Customers;
@@ -69,6 +71,10 @@ public class EcommerceDbContext :
     public DbSet<IdentityLinkUser> LinkUsers { get; set; }
     public DbSet<IdentityUserDelegation> UserDelegations { get; set; }
     public DbSet<IdentitySession> Sessions { get; set; }
+
+    // Payment Module - Required by IPaymentDbContext
+    public DbSet<PaymentRequest> PaymentRequests { get; set; }
+    public DbSet<Plan> Plans { get; set; }
 
     #endregion
 

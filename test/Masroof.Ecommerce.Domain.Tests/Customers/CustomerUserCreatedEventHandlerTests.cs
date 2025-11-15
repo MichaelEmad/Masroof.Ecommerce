@@ -6,6 +6,7 @@ using Shouldly;
 using Volo.Abp.Domain.Entities.Events;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.EventBus.Local;
+using Volo.Abp.Guids;
 using Volo.Abp.Identity;
 using Volo.Abp.Modularity;
 using Xunit;
@@ -23,6 +24,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly IRepository<ShoppingCart, Guid> _shoppingCartRepository;
     private readonly ILocalEventBus _localEventBus;
+    private readonly IGuidGenerator _guidGenerator;
 
     protected CustomerUserCreatedEventHandlerTests()
     {
@@ -31,6 +33,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         _customerRepository = GetRequiredService<IRepository<Customer, Guid>>();
         _shoppingCartRepository = GetRequiredService<IRepository<ShoppingCart, Guid>>();
         _localEventBus = GetRequiredService<ILocalEventBus>();
+        _guidGenerator = GetRequiredService<IGuidGenerator>();
     }
 
     [Fact]
@@ -48,7 +51,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         await WithUnitOfWorkAsync(async () =>
         {
             user = new IdentityUser(
-                GuidGenerator.Create(),
+                _guidGenerator.Create(),
                 userName,
                 email,
                 CurrentTenant.Id
@@ -93,7 +96,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         await WithUnitOfWorkAsync(async () =>
         {
             user = new IdentityUser(
-                GuidGenerator.Create(),
+                _guidGenerator.Create(),
                 userName,
                 email,
                 CurrentTenant.Id
@@ -137,7 +140,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         await WithUnitOfWorkAsync(async () =>
         {
             user = new IdentityUser(
-                GuidGenerator.Create(),
+                _guidGenerator.Create(),
                 userName,
                 email,
                 CurrentTenant.Id
@@ -174,7 +177,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         await WithUnitOfWorkAsync(async () =>
         {
             user = new IdentityUser(
-                GuidGenerator.Create(),
+                _guidGenerator.Create(),
                 userName,
                 email,
                 CurrentTenant.Id
@@ -211,7 +214,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         await WithUnitOfWorkAsync(async () =>
         {
             user = new IdentityUser(
-                GuidGenerator.Create(),
+                _guidGenerator.Create(),
                 userName,
                 email,
                 CurrentTenant.Id
@@ -250,7 +253,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         await WithUnitOfWorkAsync(async () =>
         {
             user = new IdentityUser(
-                GuidGenerator.Create(),
+                _guidGenerator.Create(),
                 userName,
                 email,
                 CurrentTenant.Id
@@ -287,7 +290,7 @@ public abstract class CustomerUserCreatedEventHandlerTests<TStartupModule> : Eco
         await WithUnitOfWorkAsync(async () =>
         {
             user = new IdentityUser(
-                GuidGenerator.Create(),
+                _guidGenerator.Create(),
                 userName,
                 email,
                 CurrentTenant.Id

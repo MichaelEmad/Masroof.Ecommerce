@@ -17,7 +17,7 @@ using Volo.Abp.Emailing;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.Commercial.SuiteTemplates;
-using Volo.Payment;
+using Volo.Payment.Admin;
 
 namespace Masroof.Ecommerce;
 
@@ -35,7 +35,7 @@ namespace Masroof.Ecommerce;
     typeof(AbpOpenIddictProDomainModule),
     typeof(VoloAbpCommercialSuiteTemplatesModule),
     typeof(BlobStoringDatabaseDomainModule),
-    typeof(PaymentDomainModule)
+    typeof(AbpPaymentAdminDomainModule)
     )]
 public class EcommerceDomainModule : AbpModule
 {

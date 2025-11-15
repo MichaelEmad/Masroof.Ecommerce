@@ -28,7 +28,7 @@ namespace Masroof.Ecommerce.EntityFrameworkCore;
     typeof(AbpIdentityProEntityFrameworkCoreModule),
     typeof(AbpOpenIddictProEntityFrameworkCoreModule),
     typeof(BlobStoringDatabaseEntityFrameworkCoreModule),
-    typeof(PaymentEntityFrameworkCoreModule)
+    typeof(AbpPaymentEntityFrameworkCoreModule)
     )]
 public class EcommerceEntityFrameworkCoreModule : AbpModule
 {

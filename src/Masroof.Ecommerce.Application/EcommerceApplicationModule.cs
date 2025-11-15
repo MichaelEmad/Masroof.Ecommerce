@@ -9,7 +9,7 @@ using Volo.Abp.FeatureManagement;
 using Volo.Abp.Modularity;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.OpenIddict;
-using Volo.Payment;
+using Volo.Payment.Admin;
 
 namespace Masroof.Ecommerce;
 
@@ -24,7 +24,7 @@ namespace Masroof.Ecommerce;
     typeof(AbpAuditLoggingApplicationModule),
     typeof(AbpOpenIddictProApplicationModule),
     typeof(AbpSettingManagementApplicationModule),
-    typeof(PaymentApplicationModule)
+    typeof(AbpPaymentAdminApplicationModule)
     )]
 public class EcommerceApplicationModule : AbpModule
 {

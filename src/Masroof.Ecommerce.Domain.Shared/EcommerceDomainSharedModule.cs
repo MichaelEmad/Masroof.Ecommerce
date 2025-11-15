@@ -54,12 +54,8 @@ public class EcommerceDomainSharedModule : AbpModule
             options.DefaultResourceType = typeof(EcommerceResource);
 
             // Configure supported languages
-            options.Languages.Add(new LanguageInfo("en", "en", "English", flagIcon: "famfamfam-flags us"));
-            options.Languages.Add(new LanguageInfo(
-                code: "ar",
-                uiCultureName: "ar",
-                displayName: "العربية",
-                flagIcon: "famfamfam-flags sa")
+            options.Languages.Add(new LanguageInfo("en", "en", "English"));
+            options.Languages.Add(new LanguageInfo("ar", "ar", "العربية")
             {
                 IsRightToLeft = true // Enable RTL support for Arabic
             });

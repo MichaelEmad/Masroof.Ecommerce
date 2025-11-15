@@ -43,6 +43,8 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public string? PaymentMethod { get; set; }
     public string? PaymentStatus { get; set; }
     public string? Carrier { get; set; }
+    public string? PaymentClientSecret { get; set; }
+    public string? PaymentIntentId { get; set; }
 }
 
 public class OrderItemDto : EntityDto<Guid>

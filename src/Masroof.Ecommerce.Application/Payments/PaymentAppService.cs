@@ -20,17 +20,20 @@ public class PaymentAppService : ApplicationService, IPaymentAppService
     private readonly IRepository<Order, Guid> _orderRepository;
     private readonly IRepository<Customer, Guid> _customerRepository;
     private readonly ICurrentUser _currentUser;
+    private readonly IPaymentService _paymentService;
 
     public PaymentAppService(
         IRepository<Payment, Guid> paymentRepository,
         IRepository<Order, Guid> orderRepository,
         IRepository<Customer, Guid> customerRepository,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IPaymentService paymentService)
     {
         _paymentRepository = paymentRepository;
         _orderRepository = orderRepository;
         _customerRepository = customerRepository;
         _currentUser = currentUser;
+        _paymentService = paymentService;
     }
 
     [Authorize(EcommercePermissions.Payments.Default)]
@@ -174,6 +177,113 @@ public class PaymentAppService : ApplicationService, IPaymentAppService
         }
 
         return ObjectMapper.Map<Payment, PaymentDto>(payment);
+    }
+
+    public async Task<PaymentIntentResultDto> CreatePaymentIntentAsync(CreatePaymentIntentDto input)
+    {
+        var customer = await GetCurrentCustomerAsync();
+        var order = await _orderRepository.GetAsync(input.OrderId);
+
+        // Validate order belongs to customer
+        if (order.CustomerId != customer.Id && !_currentUser.IsInRole("admin"))
+        {
+            throw new UserFriendlyException("Invalid order");
+        }
+
+        // Check if payment already exists for this order
+        var payments = await _paymentRepository.GetListAsync();
+        var existingPayment = payments.FirstOrDefault(p => p.OrderId == input.OrderId && p.Status != PaymentStatus.Failed);
+
+        if (existingPayment != null && !string.IsNullOrEmpty(existingPayment.TransactionId))
+        {
+            // Return existing payment intent
+            var confirmResult = await _paymentService.ConfirmPaymentAsync(existingPayment.TransactionId);
+            return new PaymentIntentResultDto
+            {
+                PaymentIntentId = confirmResult.PaymentIntentId,
+                ClientSecret = confirmResult.ClientSecret,
+                Status = confirmResult.Status,
+                IsSuccessful = true
+            };
+        }
+
+        // Create Stripe PaymentIntent
+        var result = await _paymentService.CreatePaymentIntentAsync(order, customer.Email);
+
+        if (!result.IsSuccessful)
+        {
+            throw new UserFriendlyException(result.ErrorMessage ?? "Failed to create payment intent");
+        }
+
+        // Create or update payment record
+        Payment payment;
+        if (existingPayment != null)
+        {
+            payment = existingPayment;
+            payment.TransactionId = result.PaymentIntentId;
+            payment.PaymentGateway = "Stripe";
+            payment.MarkAsProcessing();
+            await _paymentRepository.UpdateAsync(payment, autoSave: true);
+        }
+        else
+        {
+            payment = new Payment(
+                GuidGenerator.Create(),
+                input.OrderId,
+                customer.Id,
+                order.TotalAmount,
+                PaymentMethod.CreditCard
+            );
+            payment.TransactionId = result.PaymentIntentId;
+            payment.PaymentGateway = "Stripe";
+            payment.MarkAsProcessing();
+            await _paymentRepository.InsertAsync(payment, autoSave: true);
+        }
+
+        return new PaymentIntentResultDto
+        {
+            PaymentIntentId = result.PaymentIntentId,
+            ClientSecret = result.ClientSecret,
+            Status = result.Status,
+            IsSuccessful = result.IsSuccessful,
+            ErrorMessage = result.ErrorMessage
+        };
+    }
+
+    public async Task<PaymentIntentResultDto> ConfirmPaymentAsync(ConfirmPaymentDto input)
+    {
+        var result = await _paymentService.ConfirmPaymentAsync(input.PaymentIntentId);
+
+        // Get the payment record and update it
+        var payments = await _paymentRepository.GetListAsync();
+        var payment = payments.FirstOrDefault(p => p.TransactionId == input.PaymentIntentId);
+
+        if (payment != null && result.IsSuccessful)
+        {
+            payment.MarkAsSucceeded(
+                input.PaymentIntentId,
+                result.CardLast4,
+                result.CardBrand
+            );
+            await _paymentRepository.UpdateAsync(payment, autoSave: true);
+
+            // Update order status
+            var order = await _orderRepository.GetAsync(payment.OrderId);
+            if (order.Status == OrderStatus.Pending)
+            {
+                order.Confirm();
+                await _orderRepository.UpdateAsync(order, autoSave: true);
+            }
+        }
+
+        return new PaymentIntentResultDto
+        {
+            PaymentIntentId = result.PaymentIntentId,
+            ClientSecret = result.ClientSecret,
+            Status = result.Status,
+            IsSuccessful = result.IsSuccessful,
+            ErrorMessage = result.ErrorMessage
+        };
     }
 
     private async Task<Customer> GetCurrentCustomerAsync()

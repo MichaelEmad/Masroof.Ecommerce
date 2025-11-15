@@ -144,9 +144,8 @@ export class CheckoutComponent implements OnInit {
         this.processingOrder = false;
         // Clear the cart
         this.cartService.loadCart();
-        // Redirect to order confirmation
-        this.router.navigate(['/ecommerce/my-orders']);
-        alert('Order placed successfully! Order #' + order.orderNumber);
+        // Redirect to payment page
+        this.router.navigate(['/ecommerce/payment', order.id]);
       },
       error: (err) => {
         console.error('Error placing order:', err);

@@ -13,4 +13,8 @@ public interface IPaymentAppService : IApplicationService
     Task<PaymentDto> ProcessPaymentAsync(Guid id, ProcessPaymentDto input);
     Task<PaymentDto> RefundAsync(Guid id);
     Task<PaymentDto> GetByOrderIdAsync(Guid orderId);
+
+    // Stripe integration methods
+    Task<PaymentIntentResultDto> CreatePaymentIntentAsync(CreatePaymentIntentDto input);
+    Task<PaymentIntentResultDto> ConfirmPaymentAsync(ConfirmPaymentDto input);
 }

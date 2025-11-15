@@ -55,4 +55,10 @@ export class CartService {
       url: '/api/app/shopping-cart/apply-coupon',
       body: { couponCode },
     }).pipe(tap(cart => this.cartSubject.next(cart)));
+
+  removeCoupon = () =>
+    this.restService.request<any, ShoppingCartDto>({
+      method: 'DELETE',
+      url: '/api/app/shopping-cart/remove-coupon',
+    }).pipe(tap(cart => this.cartSubject.next(cart)));
 }

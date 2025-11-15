@@ -27,7 +27,7 @@ namespace Masroof.Ecommerce.Tests.ECommerce;
 /// 5. Payment Processing
 /// 6. Order Confirmation
 /// </summary>
-public class FullECommerceFlowTests : EcommerceApplicationTestBase
+public class FullECommerceFlowTests : EcommerceApplicationTestBase<EcommerceApplicationTestModule>
 {
     private readonly IRepository<Category, Guid> _categoryRepository;
     private readonly IRepository<Product, Guid> _productRepository;

@@ -26,4 +26,9 @@
     <PackageReference Include="Volo.Payment.Application" Version="9.3.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Embed email templates so they're included in compiled assembly -->
+    <EmbeddedResource Include="Emails\Templates\*.html" />
+  </ItemGroup>
+
 </Project>

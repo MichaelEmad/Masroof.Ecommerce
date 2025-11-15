@@ -14,7 +14,7 @@ public class EcommercePermissionDefinitionProvider : PermissionDefinitionProvide
         myGroup.AddPermission(EcommercePermissions.Dashboard.Host, L("Permission:Dashboard"), MultiTenancySides.Host);
 
         // Products
-        var productsPermission = myGroup.AddPermission(EcommercePermissions.Products.Default, L("Permission:Products"));
+        var productsPermission = myGroup.AddPermission(EcommercePermissions.Products.Default, L("Permission:Products"),MultiTenancySides.Host);
         productsPermission.AddChild(EcommercePermissions.Products.Create, L("Permission:Products.Create"));
         productsPermission.AddChild(EcommercePermissions.Products.Edit, L("Permission:Products.Edit"));
         productsPermission.AddChild(EcommercePermissions.Products.Delete, L("Permission:Products.Delete"));

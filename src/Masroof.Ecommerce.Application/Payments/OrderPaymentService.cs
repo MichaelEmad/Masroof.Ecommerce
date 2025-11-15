@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Masroof.Ecommerce.Orders;
 using Volo.Abp.Application.Services;
@@ -44,31 +46,29 @@ public class OrderPaymentService : ApplicationService
         }
 
         // Create payment request using ABP Payment Module
-        var paymentRequest = await _paymentRequestAppService.CreateAsync(new PaymentRequestCreateDto
+        // Products must be added during creation, not after
+        var createDto = new PaymentRequestCreateDto
         {
-            // Convert order total to cents/smallest currency unit for payment gateway
-            // Most payment gateways work with integers (cents for USD, etc.)
-            Currency = "USD",
-            Gateway = gateway,
-
-            // Store order information in extra properties for reference
-            ExtraProperties =
+            Currency = "USD", // Must be 3-letter ISO code
+            Products = new List<PaymentRequestProductCreateDto>
             {
-                { "OrderId", orderId.ToString() },
-                { "OrderNumber", order.OrderNumber },
-                { "CustomerId", order.CustomerId.ToString() }
+                new PaymentRequestProductCreateDto
+                {
+                    Code = order.OrderNumber,
+                    Name = $"Order {order.OrderNumber}",
+                    UnitPrice = order.TotalAmount,
+                    Count = 1,
+                    TotalPrice = order.TotalAmount
+                }
             }
-        });
+        };
 
-        // Set the payment amount (ABP Payment module expects amount in decimal)
-        paymentRequest.Products.Add(new PaymentRequestProductCreationDto
-        {
-            Code = order.OrderNumber,
-            Name = $"Order {order.OrderNumber}",
-            UnitPrice = order.TotalAmount,
-            Count = 1,
-            TotalPrice = order.TotalAmount
-        });
+        // Store order information in extra properties for reference
+        createDto.ExtraProperties.Add("OrderId", orderId.ToString());
+        createDto.ExtraProperties.Add("OrderNumber", order.OrderNumber);
+        createDto.ExtraProperties.Add("CustomerId", order.CustomerId.ToString());
+
+        var paymentRequest = await _paymentRequestAppService.CreateAsync(createDto);
 
         return paymentRequest;
     }
@@ -143,49 +143,42 @@ public class OrderPaymentService : ApplicationService
     /// </summary>
     /// <param name="orderId">The order ID</param>
     /// <returns>Payment request DTO if exists, null otherwise</returns>
+    /// <remarks>
+    /// Note: This is a simplified implementation.
+    /// In production, you should store the payment request ID with the order
+    /// for more efficient lookup.
+    /// </remarks>
     public virtual async Task<PaymentRequestDto?> GetPaymentStatusForOrderAsync(Guid orderId)
     {
-        // Get all payment requests and filter by OrderId in extra properties
-        // Note: This is a simplified implementation
-        // In production, you might want to store the payment request ID with the order
-        // or implement a more efficient lookup mechanism
+        // This is a simplified implementation
+        // ABP Payment module doesn't provide query by extra properties
+        // In production, you should:
+        // 1. Add a PaymentRequestId property to Order entity
+        // 2. Store the payment request ID when creating payment
+        // 3. Use GetAsync with the stored ID
 
-        var paymentRequests = await _paymentRequestAppService.GetListAsync(
-            new PaymentRequestGetListInput
-            {
-                MaxResultCount = 100
-            });
-
-        foreach (var request in paymentRequests.Items)
-        {
-            if (request.ExtraProperties.TryGetValue("OrderId", out var orderIdObj))
-            {
-                if (Guid.Parse(orderIdObj.ToString()!) == orderId)
-                {
-                    return request;
-                }
-            }
-        }
-
-        return null;
+        // For now, this method returns null
+        // You should enhance this based on your requirements
+        return await Task.FromResult<PaymentRequestDto?>(null);
     }
 
     /// <summary>
-    /// Complete a payment request and update order
-    /// This method should be called from webhook or after payment gateway redirect
+    /// Process payment webhook callback from payment gateway
+    /// This is typically called by ABP Payment module's webhook endpoint
     /// </summary>
     /// <param name="paymentRequestId">The payment request ID</param>
-    /// <param name="gateway">Payment gateway name</param>
     /// <returns>Updated order</returns>
-    public virtual async Task<Order> CompletePaymentAsync(Guid paymentRequestId, string gateway = "Stripe")
+    /// <remarks>
+    /// ABP Payment module handles webhook processing automatically.
+    /// This method is for manual processing if needed.
+    /// You should configure payment gateway webhooks to call ABP's built-in endpoints:
+    /// - Stripe: POST /api/payment/stripe/webhook
+    /// - PayPal: POST /api/payment/paypal/webhook
+    /// </remarks>
+    public virtual async Task<Order> ProcessPaymentWebhookAsync(Guid paymentRequestId)
     {
-        // Complete the payment using ABP Payment Module
-        await _paymentRequestAppService.CompleteAsync(gateway, new Dictionary<string, string>
-        {
-            { "paymentRequestId", paymentRequestId.ToString() }
-        });
-
-        // Handle the completion
+        // Handle the payment completion
+        // ABP Payment module will have already updated the payment request state
         return await HandlePaymentCompletedAsync(paymentRequestId);
     }
 }

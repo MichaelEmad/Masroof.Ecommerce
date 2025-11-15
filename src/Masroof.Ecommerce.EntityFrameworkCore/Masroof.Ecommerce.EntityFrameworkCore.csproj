@@ -25,6 +25,7 @@
   <ItemGroup>
     <PackageReference Include="Volo.Abp.OpenIddict.Pro.EntityFrameworkCore" Version="9.3.6" />
     <PackageReference Include="Volo.Abp.Identity.Pro.EntityFrameworkCore" Version="9.3.6" />
+    <PackageReference Include="Volo.Payment.EntityFrameworkCore" Version="9.3.6" />
   </ItemGroup>
 
   <ItemGroup>

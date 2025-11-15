@@ -13,6 +13,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
 using Volo.Abp.Studio;
+using Volo.Payment.EntityFrameworkCore;
 
 namespace Masroof.Ecommerce.EntityFrameworkCore;
 
@@ -26,7 +27,8 @@ namespace Masroof.Ecommerce.EntityFrameworkCore;
     typeof(AbpFeatureManagementEntityFrameworkCoreModule),
     typeof(AbpIdentityProEntityFrameworkCoreModule),
     typeof(AbpOpenIddictProEntityFrameworkCoreModule),
-    typeof(BlobStoringDatabaseEntityFrameworkCoreModule)
+    typeof(BlobStoringDatabaseEntityFrameworkCoreModule),
+    typeof(PaymentEntityFrameworkCoreModule)
     )]
 public class EcommerceEntityFrameworkCoreModule : AbpModule
 {

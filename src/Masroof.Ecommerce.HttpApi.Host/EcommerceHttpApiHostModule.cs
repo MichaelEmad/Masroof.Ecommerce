@@ -46,6 +46,7 @@ using Volo.Abp.Security.Claims;
 using Volo.Abp.Account.Public.Web.ExternalProviders;
 using Volo.Abp.Account.Public.Web;
 using Volo.Abp.Account.Public.Web.Impersonation;
+using Volo.Payment.Stripe;
 
 namespace Masroof.Ecommerce;
 
@@ -60,7 +61,8 @@ namespace Masroof.Ecommerce;
     typeof(AbpAccountPublicWebImpersonationModule),
     typeof(AbpAccountPublicWebOpenIddictModule),
     typeof(AbpSwashbuckleModule),
-    typeof(AbpAspNetCoreSerilogModule)
+    typeof(AbpAspNetCoreSerilogModule),
+    typeof(PaymentStripeModule)
     )]
 public class EcommerceHttpApiHostModule : AbpModule
 {

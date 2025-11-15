@@ -12,6 +12,7 @@ using Volo.Abp.Identity.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
+using Volo.Payment.EntityFrameworkCore;
 using Masroof.Ecommerce.Products;
 using Masroof.Ecommerce.Categories;
 using Masroof.Ecommerce.Customers;
@@ -24,10 +25,12 @@ using Masroof.Ecommerce.Coupons;
 namespace Masroof.Ecommerce.EntityFrameworkCore;
 
 [ReplaceDbContext(typeof(IIdentityProDbContext))]
+[ReplaceDbContext(typeof(IPaymentDbContext))]
 [ConnectionStringName("Default")]
 public class EcommerceDbContext :
     AbpDbContext<EcommerceDbContext>,
-    IIdentityProDbContext
+    IIdentityProDbContext,
+    IPaymentDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
@@ -89,6 +92,7 @@ public class EcommerceDbContext :
         builder.ConfigureIdentityPro();
         builder.ConfigureOpenIddictPro();
         builder.ConfigureBlobStoring();
+        builder.ConfigurePayment();
 
         /* Configure your own tables/entities inside here */
 

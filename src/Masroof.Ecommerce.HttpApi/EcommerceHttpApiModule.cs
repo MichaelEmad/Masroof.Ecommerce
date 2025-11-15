@@ -9,6 +9,7 @@ using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.Localization;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.OpenIddict;
+using Volo.Payment;
 
 namespace Masroof.Ecommerce;
 
@@ -21,7 +22,8 @@ namespace Masroof.Ecommerce;
     typeof(AbpAuditLoggingHttpApiModule),
     typeof(AbpOpenIddictProHttpApiModule),
     typeof(AbpAccountPublicHttpApiModule),
-    typeof(AbpFeatureManagementHttpApiModule)
+    typeof(AbpFeatureManagementHttpApiModule),
+    typeof(PaymentHttpApiModule)
     )]
 public class EcommerceHttpApiModule : AbpModule
 {

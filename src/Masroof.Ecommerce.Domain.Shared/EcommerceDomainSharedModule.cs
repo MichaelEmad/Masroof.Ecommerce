@@ -13,6 +13,7 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.BlobStoring.Database;
 using Volo.Abp.GlobalFeatures;
+using Volo.Payment;
 
 namespace Masroof.Ecommerce;
 
@@ -25,7 +26,8 @@ namespace Masroof.Ecommerce;
     typeof(AbpIdentityProDomainSharedModule),
     typeof(AbpOpenIddictProDomainSharedModule),
     typeof(AbpGlobalFeaturesModule),
-    typeof(BlobStoringDatabaseDomainSharedModule)
+    typeof(BlobStoringDatabaseDomainSharedModule),
+    typeof(PaymentDomainSharedModule)
     )]
 public class EcommerceDomainSharedModule : AbpModule
 {

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Masroof.Ecommerce.Emails;
 using Masroof.Ecommerce.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
@@ -15,12 +16,15 @@ namespace Masroof.Ecommerce.Customers;
 public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCustomerDto>, ICustomerAppService
 {
     private readonly ICurrentUser _currentUser;
+    private readonly IEmailService _emailService;
 
     public CustomerAppService(
         IRepository<Customer, Guid> repository,
-        ICurrentUser currentUser) : base(repository)
+        ICurrentUser currentUser,
+        IEmailService emailService) : base(repository)
     {
         _currentUser = currentUser;
+        _emailService = emailService;
         GetPolicyName = EcommercePermissions.Customers.Default;
         GetListPolicyName = EcommercePermissions.Customers.Default;
         CreatePolicyName = EcommercePermissions.Customers.Create;
@@ -45,6 +49,9 @@ public class CustomerAppService : CrudAppService<Customer, CustomerDto, Guid, Pa
                 _currentUser.Email ?? ""
             );
             customer = await Repository.InsertAsync(customer, autoSave: true);
+
+            // Send welcome email to new customer
+            await _emailService.SendWelcomeEmailAsync(customer);
         }
 
         return ObjectMapper.Map<Customer, CustomerDto>(customer);

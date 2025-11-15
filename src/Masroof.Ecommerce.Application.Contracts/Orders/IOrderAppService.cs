@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 
 namespace Masroof.Ecommerce.Orders;
 
@@ -14,4 +15,5 @@ public interface IOrderAppService : IApplicationService
     Task<ListResultDto<OrderDto>> GetMyOrdersAsync();
     Task<OrderDto> GetMyOrderAsync(Guid id);
     Task CancelAsync(Guid id);
+    Task<IRemoteStreamContent> DownloadInvoiceAsync(Guid id);
 }

@@ -1,0 +1,19 @@
+.modal.show {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.table {
+  td {
+    vertical-align: middle;
+  }
+}
+
+.btn-group {
+  gap: 0.25rem;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

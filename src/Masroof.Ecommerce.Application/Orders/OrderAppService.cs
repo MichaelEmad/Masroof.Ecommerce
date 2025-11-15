@@ -1,8 +1,11 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Masroof.Ecommerce.Addresses;
 using Masroof.Ecommerce.Customers;
+using Masroof.Ecommerce.Emails;
+using Masroof.Ecommerce.Invoices;
 using Masroof.Ecommerce.Permissions;
 using Masroof.Ecommerce.Products;
 using Masroof.Ecommerce.ShoppingCarts;
@@ -10,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Users;
 
@@ -24,6 +28,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRepository<ShoppingCart, Guid> _cartRepository;
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly ICurrentUser _currentUser;
+    private readonly IEmailService _emailService;
+    private readonly IInvoiceService _invoiceService;
 
     public OrderAppService(
         IRepository<Order, Guid> orderRepository,
@@ -31,7 +37,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IRepository<Address, Guid> addressRepository,
         IRepository<ShoppingCart, Guid> cartRepository,
         IRepository<Product, Guid> productRepository,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        IEmailService emailService,
+        IInvoiceService invoiceService)
     {
         _orderRepository = orderRepository;
         _customerRepository = customerRepository;
@@ -39,13 +47,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _cartRepository = cartRepository;
         _productRepository = productRepository;
         _currentUser = currentUser;
+        _emailService = emailService;
+        _invoiceService = invoiceService;
     }
 
     [Authorize(EcommercePermissions.Orders.Default)]
     public async Task<OrderDto> GetAsync(Guid id)
     {
         var order = await _orderRepository.GetAsync(id);
-        return ObjectMapper.Map<Order, OrderDto>(order);
+        var orderDto = ObjectMapper.Map<Order, OrderDto>(order);
+
+        // Populate customer information
+        var customer = await _customerRepository.GetAsync(order.CustomerId);
+        orderDto.CustomerEmail = customer.Email;
+        orderDto.CustomerName = customer.GetFullName();
+
+        return orderDto;
     }
 
     [Authorize(EcommercePermissions.Orders.Default)]
@@ -60,9 +77,23 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .Take(input.MaxResultCount)
             .ToList();
 
+        var orderDtos = ObjectMapper.Map<System.Collections.Generic.List<Order>, System.Collections.Generic.List<OrderDto>>(orderedList);
+
+        // Populate customer information
+        var customers = await _customerRepository.GetListAsync();
+        foreach (var orderDto in orderDtos)
+        {
+            var customer = customers.FirstOrDefault(c => c.Id == orderDto.CustomerId);
+            if (customer != null)
+            {
+                orderDto.CustomerEmail = customer.Email;
+                orderDto.CustomerName = customer.GetFullName();
+            }
+        }
+
         return new PagedResultDto<OrderDto>(
             totalCount,
-            ObjectMapper.Map<System.Collections.Generic.List<Order>, System.Collections.Generic.List<OrderDto>>(orderedList)
+            orderDtos
         );
     }
 
@@ -169,6 +200,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         cart.Clear();
         await _cartRepository.UpdateAsync(cart, autoSave: true);
 
+        // Send order confirmation email
+        await _emailService.SendOrderConfirmationEmailAsync(order, customer);
+
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
 
@@ -176,6 +210,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> UpdateStatusAsync(Guid id, UpdateOrderStatusDto input)
     {
         var order = await _orderRepository.GetAsync(id);
+        var customer = await _customerRepository.GetAsync(order.CustomerId);
 
         switch (input.Status)
         {
@@ -191,9 +226,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     throw new UserFriendlyException("Tracking number and shipping carrier are required for shipped status");
                 }
                 order.Ship(input.TrackingNumber, input.ShippingCarrier);
+                // Send order shipped email
+                await _emailService.SendOrderShippedEmailAsync(order, customer);
                 break;
             case OrderStatus.Delivered:
                 order.Deliver();
+                // Send order delivered email
+                await _emailService.SendOrderDeliveredEmailAsync(order, customer);
                 break;
             case OrderStatus.Cancelled:
                 order.Cancel();
@@ -219,9 +258,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .OrderByDescending(o => o.CreationTime)
             .ToList();
 
-        return new ListResultDto<OrderDto>(
-            ObjectMapper.Map<System.Collections.Generic.List<Order>, System.Collections.Generic.List<OrderDto>>(myOrders)
-        );
+        var orderDtos = ObjectMapper.Map<System.Collections.Generic.List<Order>, System.Collections.Generic.List<OrderDto>>(myOrders);
+
+        // Populate customer information
+        foreach (var orderDto in orderDtos)
+        {
+            orderDto.CustomerEmail = customer.Email;
+            orderDto.CustomerName = customer.GetFullName();
+        }
+
+        return new ListResultDto<OrderDto>(orderDtos);
     }
 
     public async Task<OrderDto> GetMyOrderAsync(Guid id)
@@ -234,7 +280,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw new UserFriendlyException("Order not found");
         }
 
-        return ObjectMapper.Map<Order, OrderDto>(order);
+        var orderDto = ObjectMapper.Map<Order, OrderDto>(order);
+
+        // Populate customer information
+        orderDto.CustomerEmail = customer.Email;
+        orderDto.CustomerName = customer.GetFullName();
+
+        return orderDto;
     }
 
     public async Task CancelAsync(Guid id)
@@ -254,6 +306,30 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         order.Cancel();
         await _orderRepository.UpdateAsync(order, autoSave: true);
+    }
+
+    public async Task<IRemoteStreamContent> DownloadInvoiceAsync(Guid id)
+    {
+        var order = await _orderRepository.GetAsync(id);
+
+        // Check permissions - user can download their own invoice, or admin can download any invoice
+        if (!_currentUser.IsInRole("admin"))
+        {
+            var customer = await GetCurrentCustomerAsync();
+            if (order.CustomerId != customer.Id)
+            {
+                throw new UserFriendlyException("You don't have permission to download this invoice");
+            }
+        }
+
+        // Generate PDF
+        var pdfBytes = await _invoiceService.GenerateInvoicePdfAsync(id);
+
+        // Return as stream
+        var stream = new MemoryStream(pdfBytes);
+        var fileName = $"Invoice-{order.OrderNumber}.pdf";
+
+        return new RemoteStreamContent(stream, fileName, "application/pdf");
     }
 
     private async Task<Customer> GetCurrentCustomerAsync()

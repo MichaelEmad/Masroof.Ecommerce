@@ -1,121 +1,61 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../proxy/products/product.service';
 import { CategoryService } from '../../proxy/categories/category.service';
 import { CartService } from '../../proxy/shopping-carts/cart.service';
-import { ProductDto, CategoryDto } from '../../proxy/products/models';
+import { ProductDto, CategoryDto, ProductFilterDto } from '../../proxy/products/models';
 import { RouterModule } from '@angular/router';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-product-catalog',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
-    <div class="container mt-4">
-      <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3">
-          <div class="card">
-            <div class="card-header">
-              <h5>Categories</h5>
-            </div>
-            <div class="list-group list-group-flush">
-              <button
-                class="list-group-item list-group-item-action"
-                [class.active]="!selectedCategoryId"
-                (click)="selectCategory(null)">
-                All Products
-              </button>
-              <button
-                *ngFor="let category of categories"
-                class="list-group-item list-group-item-action"
-                [class.active]="selectedCategoryId === category.id"
-                (click)="selectCategory(category.id)">
-                {{ category.name }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Products Grid -->
-        <div class="col-md-9">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>{{ selectedCategoryId ? 'Category Products' : 'All Products' }}</h2>
-            <div class="btn-group">
-              <button class="btn btn-outline-primary active">
-                <i class="bi bi-grid"></i> Grid
-              </button>
-              <button class="btn btn-outline-primary">
-                <i class="bi bi-list"></i> List
-              </button>
-            </div>
-          </div>
-
-          <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col" *ngFor="let product of products">
-              <div class="card h-100 shadow-sm">
-                <div class="position-relative">
-                  <img
-                    [src]="product.imageUrl || '/assets/images/no-image.png'"
-                    class="card-img-top"
-                    [alt]="product.name"
-                    style="height: 200px; object-fit: cover;">
-                  <span *ngIf="product.discountPrice" class="badge bg-danger position-absolute top-0 end-0 m-2">
-                    {{ getDiscountPercentage(product) }}% OFF
-                  </span>
-                  <span *ngIf="!product.inStock" class="badge bg-secondary position-absolute top-0 start-0 m-2">
-                    Out of Stock
-                  </span>
-                  <span *ngIf="product.isFeatured" class="badge bg-warning position-absolute top-0 start-0 m-2">
-                    <i class="bi bi-star-fill"></i> Featured
-                  </span>
-                </div>
-                <div class="card-body">
-                  <h5 class="card-title">{{ product.name }}</h5>
-                  <p class="card-text text-muted small">{{ product.shortDescription }}</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                      <span *ngIf="product.discountPrice" class="text-muted text-decoration-line-through me-2">
-                        \${{ product.price }}
-                      </span>
-                      <span class="h5 text-primary mb-0">\${{ product.effectivePrice }}</span>
-                    </div>
-                    <small class="text-muted">
-                      <i class="bi bi-eye"></i> {{ product.viewCount }}
-                    </small>
-                  </div>
-                </div>
-                <div class="card-footer bg-white">
-                  <div class="d-grid gap-2">
-                    <button
-                      class="btn btn-primary"
-                      [disabled]="!product.inStock"
-                      (click)="addToCart(product)">
-                      <i class="bi bi-cart-plus"></i>
-                      {{ product.inStock ? 'Add to Cart' : 'Out of Stock' }}
-                    </button>
-                    <a [routerLink]="['/ecommerce/products', product.id]" class="btn btn-outline-secondary btn-sm">
-                      View Details
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div *ngIf="products.length === 0" class="text-center py-5">
-            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-            <p class="text-muted mt-3">No products found</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+  imports: [CommonModule, RouterModule, FormsModule],
+  templateUrl: './product-catalog.component.html',
+  styleUrls: ['./product-catalog.component.scss']
 })
 export class ProductCatalogComponent implements OnInit {
   products: ProductDto[] = [];
   categories: CategoryDto[] = [];
+  totalCount = 0;
+
+  // Filter properties
+  searchTerm = '';
   selectedCategoryId: string | null = null;
+  selectedPriceRange: string = '';
+  selectedSortBy: string = 'newest';
+  inStockOnly = false;
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 12;
+  totalPages = 1;
+
+  // Active filters
+  activeFilters: { type: string; label: string; value: any }[] = [];
+
+  // Search debounce
+  private searchSubject = new Subject<string>();
+
+  // Price range options
+  priceRanges = [
+    { label: 'All Prices', value: '', min: null, max: null },
+    { label: 'Under $50', value: 'under50', min: 0, max: 50 },
+    { label: '$50 - $100', value: '50-100', min: 50, max: 100 },
+    { label: '$100 - $200', value: '100-200', min: 100, max: 200 },
+    { label: 'Over $200', value: 'over200', min: 200, max: null }
+  ];
+
+  // Sort options
+  sortOptions = [
+    { label: 'Name A-Z', value: 'name_asc' },
+    { label: 'Name Z-A', value: 'name_desc' },
+    { label: 'Price Low-High', value: 'price_asc' },
+    { label: 'Price High-Low', value: 'price_desc' },
+    { label: 'Newest', value: 'newest' },
+    { label: 'Most Popular', value: 'popular' }
+  ];
 
   constructor(
     private productService: ProductService,
@@ -125,7 +65,15 @@ export class ProductCatalogComponent implements OnInit {
 
   ngOnInit() {
     this.loadCategories();
+    this.setupSearchDebounce();
     this.loadProducts();
+  }
+
+  setupSearchDebounce() {
+    this.searchSubject.pipe(debounceTime(500)).subscribe(() => {
+      this.currentPage = 1;
+      this.loadProducts();
+    });
   }
 
   loadCategories() {
@@ -135,20 +83,145 @@ export class ProductCatalogComponent implements OnInit {
   }
 
   loadProducts() {
-    if (this.selectedCategoryId) {
-      this.productService.getProductsByCategory(this.selectedCategoryId).subscribe(data => {
-        this.products = data;
-      });
-    } else {
-      this.productService.getPublicProducts().subscribe(data => {
-        this.products = data.items || [];
-      });
-    }
+    const priceRange = this.priceRanges.find(pr => pr.value === this.selectedPriceRange);
+
+    const filter: ProductFilterDto = {
+      searchTerm: this.searchTerm || undefined,
+      categoryId: this.selectedCategoryId || undefined,
+      minPrice: priceRange?.min || undefined,
+      maxPrice: priceRange?.max || undefined,
+      sortBy: this.selectedSortBy,
+      inStockOnly: this.inStockOnly || undefined,
+      skipCount: (this.currentPage - 1) * this.pageSize,
+      maxResultCount: this.pageSize
+    };
+
+    this.productService.getFilteredProducts(filter).subscribe(data => {
+      this.products = data.items || [];
+      this.totalCount = data.totalCount || 0;
+      this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+      this.updateActiveFilters();
+    });
+  }
+
+  onSearchChange() {
+    this.searchSubject.next(this.searchTerm);
   }
 
   selectCategory(categoryId: string | null) {
     this.selectedCategoryId = categoryId;
+    this.currentPage = 1;
     this.loadProducts();
+  }
+
+  onPriceRangeChange() {
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
+  onSortChange() {
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
+  onInStockChange() {
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
+  updateActiveFilters() {
+    this.activeFilters = [];
+
+    if (this.searchTerm) {
+      this.activeFilters.push({
+        type: 'search',
+        label: `Search: "${this.searchTerm}"`,
+        value: this.searchTerm
+      });
+    }
+
+    if (this.selectedCategoryId) {
+      const category = this.categories.find(c => c.id === this.selectedCategoryId);
+      if (category) {
+        this.activeFilters.push({
+          type: 'category',
+          label: `Category: ${category.name}`,
+          value: this.selectedCategoryId
+        });
+      }
+    }
+
+    if (this.selectedPriceRange) {
+      const priceRange = this.priceRanges.find(pr => pr.value === this.selectedPriceRange);
+      if (priceRange) {
+        this.activeFilters.push({
+          type: 'price',
+          label: `Price: ${priceRange.label}`,
+          value: this.selectedPriceRange
+        });
+      }
+    }
+
+    if (this.inStockOnly) {
+      this.activeFilters.push({
+        type: 'stock',
+        label: 'In Stock Only',
+        value: true
+      });
+    }
+  }
+
+  removeFilter(filter: { type: string; label: string; value: any }) {
+    switch (filter.type) {
+      case 'search':
+        this.searchTerm = '';
+        break;
+      case 'category':
+        this.selectedCategoryId = null;
+        break;
+      case 'price':
+        this.selectedPriceRange = '';
+        break;
+      case 'stock':
+        this.inStockOnly = false;
+        break;
+    }
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
+  clearAllFilters() {
+    this.searchTerm = '';
+    this.selectedCategoryId = null;
+    this.selectedPriceRange = '';
+    this.inStockOnly = false;
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
+  // Pagination methods
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadProducts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxPagesToShow - 1);
+
+    if (endPage - startPage < maxPagesToShow - 1) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   addToCart(product: ProductDto) {

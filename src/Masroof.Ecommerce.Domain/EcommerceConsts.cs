@@ -8,4 +8,7 @@ public static class EcommerceConsts
     public const string? DbSchema = null;
     public const string AdminEmailDefaultValue = IdentityDataSeedContributor.AdminEmailDefaultValue;
     public const string AdminPasswordDefaultValue = IdentityDataSeedContributor.AdminPasswordDefaultValue;
+
+    // Blob Container Names
+    public const string ProductImageContainerName = "product-images";
 }

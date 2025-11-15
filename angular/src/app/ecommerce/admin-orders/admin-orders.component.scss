@@ -1,0 +1,21 @@
+.modal.show {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.table {
+  td {
+    vertical-align: middle;
+  }
+}
+
+.btn-group {
+  gap: 0.25rem;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+.img-thumbnail {
+  border-radius: 4px;
+}

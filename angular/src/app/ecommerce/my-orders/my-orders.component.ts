@@ -83,6 +83,11 @@ import { OrderDto, OrderStatus } from '../../proxy/products/models';
                       </div>
                     </div>
                   </div>
+                  <button
+                          class="btn btn-success btn-sm mt-2 w-100"
+                          (click)="downloadInvoice(order)">
+                    <i class="bi bi-file-pdf"></i> Download Invoice
+                  </button>
                   <button *ngIf="canCancel(order)"
                           class="btn btn-danger btn-sm mt-2 w-100"
                           (click)="cancelOrder(order.id)">
@@ -156,5 +161,22 @@ export class MyOrdersComponent implements OnInit {
         this.loadOrders();
       });
     }
+  }
+
+  downloadInvoice(order: OrderDto) {
+    this.orderService.downloadInvoice(order.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Invoice-${order.orderNumber}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error downloading invoice:', err);
+        alert('Error downloading invoice: ' + (err.error?.error?.message || 'Unknown error'));
+      }
+    });
   }
 }

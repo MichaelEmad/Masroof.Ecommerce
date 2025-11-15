@@ -1,4 +1,6 @@
-﻿using Volo.Abp.PermissionManagement;
+﻿using Masroof.Ecommerce.Invoices;
+using Microsoft.Extensions.DependencyInjection;
+using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.Account;
 using Volo.Abp.Identity;
@@ -30,5 +32,7 @@ public class EcommerceApplicationModule : AbpModule
         {
             options.AddMaps<EcommerceApplicationModule>();
         });
+
+        context.Services.AddTransient<IInvoiceService, InvoiceService>();
     }
 }

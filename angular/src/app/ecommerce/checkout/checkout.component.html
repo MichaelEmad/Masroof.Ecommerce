@@ -1,0 +1,233 @@
+<div class="container mt-4 mb-5">
+  <h2 class="mb-4">Checkout</h2>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-3 text-muted">Loading checkout information...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+  </div>
+
+  <!-- Checkout Content -->
+  <div *ngIf="!loading && cart && !cart.isEmpty" class="row">
+    <!-- Left Column - Addresses and Notes -->
+    <div class="col-lg-8">
+      <!-- Shipping Address -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-truck me-2"></i>Shipping Address
+          </h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="shippingAddresses.length === 0" class="alert alert-warning">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            No shipping addresses found. Please add an address in your account settings.
+          </div>
+
+          <div *ngFor="let address of shippingAddresses" class="form-check mb-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="shippingAddress"
+              [id]="'shipping-' + address.id"
+              [value]="address.id"
+              [(ngModel)]="selectedShippingAddressId">
+            <label class="form-check-label w-100" [for]="'shipping-' + address.id">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong>{{ address.fullName }}</strong>
+                  <span *ngIf="address.isDefault" class="badge bg-success ms-2">Default</span>
+                  <br>
+                  <span class="text-muted">{{ address.formattedAddress }}</span>
+                  <br>
+                  <small class="text-muted">
+                    <i class="bi bi-telephone me-1"></i>{{ address.phoneNumber }}
+                  </small>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing Address -->
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-credit-card me-2"></i>Billing Address
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="form-check mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="sameAsShipping"
+              (change)="useSameAddress($event)">
+            <label class="form-check-label" for="sameAsShipping">
+              <strong>Same as shipping address</strong>
+            </label>
+          </div>
+
+          <div *ngIf="billingAddresses.length === 0" class="alert alert-warning">
+            <i class="bi bi-exclamation-circle me-2"></i>
+            No billing addresses found. Please add an address in your account settings.
+          </div>
+
+          <div *ngFor="let address of billingAddresses" class="form-check mb-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="billingAddress"
+              [id]="'billing-' + address.id"
+              [value]="address.id"
+              [(ngModel)]="selectedBillingAddressId">
+            <label class="form-check-label w-100" [for]="'billing-' + address.id">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong>{{ address.fullName }}</strong>
+                  <span *ngIf="address.isDefault" class="badge bg-success ms-2">Default</span>
+                  <br>
+                  <span class="text-muted">{{ address.formattedAddress }}</span>
+                  <br>
+                  <small class="text-muted">
+                    <i class="bi bi-telephone me-1"></i>{{ address.phoneNumber }}
+                  </small>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Notes -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-chat-left-text me-2"></i>Order Notes (Optional)
+          </h5>
+        </div>
+        <div class="card-body">
+          <textarea
+            class="form-control"
+            rows="4"
+            [(ngModel)]="customerNotes"
+            placeholder="Add any special instructions for your order..."></textarea>
+          <small class="text-muted">
+            Example: Please leave package at the front door, or call before delivery.
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Order Summary -->
+    <div class="col-lg-4">
+      <div class="card sticky-top" style="top: 20px;">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Order Summary</h5>
+        </div>
+        <div class="card-body">
+          <!-- Cart Items -->
+          <div class="mb-3">
+            <h6 class="text-muted mb-3">Items ({{ cart.totalItems }})</h6>
+            <div *ngFor="let item of cart.items" class="d-flex mb-3 pb-3 border-bottom">
+              <img
+                [src]="item.imageUrl || '/assets/images/no-image.png'"
+                class="rounded me-3"
+                style="width: 60px; height: 60px; object-fit: cover;"
+                [alt]="item.productName">
+              <div class="flex-grow-1">
+                <div class="fw-bold small">{{ item.productName }}</div>
+                <small class="text-muted">Qty: {{ item.quantity }}</small>
+              </div>
+              <div class="text-end">
+                <strong>${{ item.totalPrice | number:'1.2-2' }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="border-top pt-3">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal:</span>
+              <strong>${{ cart.subTotal | number:'1.2-2' }}</strong>
+            </div>
+
+            <div *ngIf="cart.discountAmount > 0" class="d-flex justify-content-between mb-2 text-success">
+              <span>
+                Discount
+                <span *ngIf="cart.couponCode" class="badge bg-success ms-1">
+                  {{ cart.couponCode }}
+                </span>
+              </span>
+              <strong>-${{ cart.discountAmount | number:'1.2-2' }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping:</span>
+              <strong>${{ shippingCost | number:'1.2-2' }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3">
+              <span>Tax ({{ taxRate * 100 }}%):</span>
+              <strong>${{ tax | number:'1.2-2' }}</strong>
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between mb-4">
+              <h5 class="mb-0">Total:</h5>
+              <h4 class="mb-0 text-primary">${{ totalAmount | number:'1.2-2' }}</h4>
+            </div>
+
+            <!-- Place Order Button -->
+            <div class="d-grid gap-2">
+              <button
+                class="btn btn-primary btn-lg"
+                (click)="placeOrder()"
+                [disabled]="processingOrder || !selectedShippingAddressId || !selectedBillingAddressId">
+                <span *ngIf="!processingOrder">
+                  <i class="bi bi-check-circle me-2"></i>Place Order
+                </span>
+                <span *ngIf="processingOrder">
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Processing...
+                </span>
+              </button>
+              <a routerLink="/ecommerce/cart" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to Cart
+              </a>
+            </div>
+          </div>
+
+          <!-- Security Notice -->
+          <div class="alert alert-info mt-3 mb-0" role="alert">
+            <small>
+              <i class="bi bi-shield-check me-2"></i>
+              Your payment information is secure and encrypted.
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty Cart Message -->
+  <div *ngIf="!loading && (!cart || cart.isEmpty)" class="text-center py-5">
+    <i class="bi bi-cart-x" style="font-size: 5rem; color: #ccc;"></i>
+    <h3 class="mt-3">Your cart is empty</h3>
+    <p class="text-muted">Add some products before checkout!</p>
+    <a routerLink="/ecommerce/products" class="btn btn-primary">
+      Browse Products
+    </a>
+  </div>
+</div>

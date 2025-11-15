@@ -23,6 +23,9 @@ public class EcommerceApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.ViewCount, opt => opt.Ignore())
             .ForMember(dest => dest.SoldCount, opt => opt.Ignore());
 
+        // ProductImage
+        CreateMap<ProductImage, ProductImageDto>();
+
         // Category
         CreateMap<Category, CategoryDto>()
             .ForMember(dest => dest.IsRootCategory, opt => opt.MapFrom(src => src.IsRootCategory()));
@@ -49,7 +52,12 @@ public class EcommerceApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.CustomerId, opt => opt.Ignore());
 
         // Order
-        CreateMap<Order, OrderDto>();
+        CreateMap<Order, OrderDto>()
+            .ForMember(dest => dest.Carrier, opt => opt.MapFrom(src => src.ShippingCarrier))
+            .ForMember(dest => dest.CustomerEmail, opt => opt.Ignore())
+            .ForMember(dest => dest.CustomerName, opt => opt.Ignore())
+            .ForMember(dest => dest.PaymentMethod, opt => opt.Ignore())
+            .ForMember(dest => dest.PaymentStatus, opt => opt.Ignore());
         CreateMap<OrderItem, OrderItemDto>()
             .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.GetTotalPrice()));
 

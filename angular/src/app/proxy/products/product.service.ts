@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RestService } from '@abp/ng.core';
 import type { PagedResultDto } from '@abp/ng.core';
-import type { ProductDto, CreateUpdateProductDto } from './models';
+import type { ProductDto, CreateUpdateProductDto, ProductFilterDto } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -37,6 +37,13 @@ export class ProductService {
     this.restService.request<any, PagedResultDto<ProductDto>>({
       method: 'GET',
       url: '/api/app/product/public-products',
+    });
+
+  getFilteredProducts = (input: ProductFilterDto) =>
+    this.restService.request<any, PagedResultDto<ProductDto>>({
+      method: 'GET',
+      url: '/api/app/product/filtered-products',
+      params: input,
     });
 
   create = (input: CreateUpdateProductDto) =>

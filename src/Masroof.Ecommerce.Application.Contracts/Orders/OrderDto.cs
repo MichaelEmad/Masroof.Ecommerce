@@ -8,6 +8,8 @@ public class OrderDto : FullAuditedEntityDto<Guid>
 {
     public string OrderNumber { get; set; } = string.Empty;
     public Guid CustomerId { get; set; }
+    public string? CustomerEmail { get; set; }
+    public string? CustomerName { get; set; }
     public List<OrderItemDto> Items { get; set; } = new();
     public OrderStatus Status { get; set; }
     public decimal SubTotal { get; set; }
@@ -38,6 +40,9 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public DateTime? DeliveredDate { get; set; }
     public string? TrackingNumber { get; set; }
     public string? ShippingCarrier { get; set; }
+    public string? PaymentMethod { get; set; }
+    public string? PaymentStatus { get; set; }
+    public string? Carrier { get; set; }
 }
 
 public class OrderItemDto : EntityDto<Guid>

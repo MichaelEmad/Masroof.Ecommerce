@@ -1,0 +1,248 @@
+<div class="container mt-4">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-funnel"></i> Filters</h5>
+        </div>
+        <div class="card-body">
+          <!-- Category Filter -->
+          <div class="mb-4">
+            <h6 class="fw-bold mb-3">Categories</h6>
+            <div class="list-group list-group-flush">
+              <button
+                class="list-group-item list-group-item-action"
+                [class.active]="!selectedCategoryId"
+                (click)="selectCategory(null)">
+                All Products
+              </button>
+              <button
+                *ngFor="let category of categories"
+                class="list-group-item list-group-item-action"
+                [class.active]="selectedCategoryId === category.id"
+                (click)="selectCategory(category.id)">
+                {{ category.name }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Price Range Filter -->
+          <div class="mb-4">
+            <h6 class="fw-bold mb-3">Price Range</h6>
+            <select
+              class="form-select"
+              [(ngModel)]="selectedPriceRange"
+              (change)="onPriceRangeChange()">
+              <option *ngFor="let range of priceRanges" [value]="range.value">
+                {{ range.label }}
+              </option>
+            </select>
+          </div>
+
+          <!-- In Stock Filter -->
+          <div class="mb-4">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="inStockOnly"
+                [(ngModel)]="inStockOnly"
+                (change)="onInStockChange()">
+              <label class="form-check-label" for="inStockOnly">
+                In Stock Only
+              </label>
+            </div>
+          </div>
+
+          <!-- Clear Filters Button -->
+          <button
+            *ngIf="activeFilters.length > 0"
+            class="btn btn-outline-secondary w-100"
+            (click)="clearAllFilters()">
+            <i class="bi bi-x-circle"></i> Clear All Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="col-md-9">
+      <!-- Search and Sort Bar -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+            <!-- Search Bar -->
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search products by name or description..."
+                  [(ngModel)]="searchTerm"
+                  (input)="onSearchChange()">
+                <button
+                  *ngIf="searchTerm"
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="searchTerm = ''; onSearchChange()">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-sort-down"></i>
+                </span>
+                <select
+                  class="form-select"
+                  [(ngModel)]="selectedSortBy"
+                  (change)="onSortChange()">
+                  <option *ngFor="let option of sortOptions" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Filters Badges -->
+      <div *ngIf="activeFilters.length > 0" class="mb-3">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <span class="fw-bold">Active Filters:</span>
+          <span
+            *ngFor="let filter of activeFilters"
+            class="badge bg-primary d-flex align-items-center gap-1">
+            {{ filter.label }}
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              aria-label="Remove"
+              style="font-size: 0.7rem;"
+              (click)="removeFilter(filter)"></button>
+          </span>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">
+          <span class="text-muted">Showing {{ products.length }} of {{ totalCount }} products</span>
+        </h5>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+        <div class="col" *ngFor="let product of products">
+          <div class="card h-100 shadow-sm product-card">
+            <div class="position-relative">
+              <img
+                [src]="product.imageUrl || '/assets/images/no-image.png'"
+                class="card-img-top"
+                [alt]="product.name"
+                style="height: 200px; object-fit: cover;">
+              <span *ngIf="product.discountPrice" class="badge bg-danger position-absolute top-0 end-0 m-2">
+                {{ getDiscountPercentage(product) }}% OFF
+              </span>
+              <span *ngIf="!product.inStock" class="badge bg-secondary position-absolute top-0 start-0 m-2">
+                Out of Stock
+              </span>
+              <span *ngIf="product.isFeatured && product.inStock" class="badge bg-warning position-absolute top-0 start-0 m-2">
+                <i class="bi bi-star-fill"></i> Featured
+              </span>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text text-muted small">{{ product.shortDescription }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <span *ngIf="product.discountPrice" class="text-muted text-decoration-line-through me-2">
+                    ${{ product.price }}
+                  </span>
+                  <span class="h5 text-primary mb-0">${{ product.effectivePrice }}</span>
+                </div>
+                <small class="text-muted">
+                  <i class="bi bi-eye"></i> {{ product.viewCount }}
+                </small>
+              </div>
+            </div>
+            <div class="card-footer bg-white">
+              <div class="d-grid gap-2">
+                <button
+                  class="btn btn-primary"
+                  [disabled]="!product.inStock"
+                  (click)="addToCart(product)">
+                  <i class="bi bi-cart-plus"></i>
+                  {{ product.inStock ? 'Add to Cart' : 'Out of Stock' }}
+                </button>
+                <a [routerLink]="['/ecommerce/products', product.id]" class="btn btn-outline-secondary btn-sm">
+                  <i class="bi bi-eye"></i> View Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Products Message -->
+      <div *ngIf="products.length === 0" class="text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+        <h4 class="text-muted mt-3">No products found</h4>
+        <p class="text-muted">Try adjusting your filters or search terms</p>
+        <button
+          *ngIf="activeFilters.length > 0"
+          class="btn btn-primary"
+          (click)="clearAllFilters()">
+          Clear All Filters
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <nav *ngIf="totalPages > 1" aria-label="Product pagination">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToPage(1)" [disabled]="currentPage === 1">
+              <i class="bi bi-chevron-double-left"></i>
+            </button>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+          </li>
+
+          <li
+            *ngFor="let page of pageNumbers"
+            class="page-item"
+            [class.active]="page === currentPage">
+            <button class="page-link" (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          </li>
+
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">
+              <i class="bi bi-chevron-double-right"></i>
+            </button>
+          </li>
+        </ul>
+        <p class="text-center text-muted">
+          Page {{ currentPage }} of {{ totalPages }}
+        </p>
+      </nav>
+    </div>
+  </div>
+</div>

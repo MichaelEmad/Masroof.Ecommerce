@@ -36,6 +36,17 @@ export interface CreateUpdateProductDto {
   brand?: string;
 }
 
+export interface ProductFilterDto {
+  searchTerm?: string;
+  categoryId?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: string;
+  inStockOnly?: boolean;
+  skipCount?: number;
+  maxResultCount?: number;
+}
+
 export interface CategoryDto {
   id: string;
   name: string;
@@ -46,6 +57,15 @@ export interface CategoryDto {
   parentCategoryId?: string;
   slug?: string;
   isRootCategory: boolean;
+}
+
+export interface CreateUpdateCategoryDto {
+  name: string;
+  description: string;
+  imageUrl?: string;
+  isActive: boolean;
+  displayOrder: number;
+  parentCategoryId?: string;
 }
 
 export interface ShoppingCartDto {
@@ -79,6 +99,7 @@ export interface OrderDto {
   id: string;
   orderNumber: string;
   customerId: string;
+  customerEmail?: string;
   items: OrderItemDto[];
   status: OrderStatus;
   subTotal: number;
@@ -88,9 +109,18 @@ export interface OrderDto {
   totalAmount: number;
   creationTime: string;
   shippingFullName: string;
+  shippingAddressLine1?: string;
+  shippingAddressLine2?: string;
   shippingCity: string;
   shippingState: string;
+  shippingPostalCode?: string;
+  shippingCountry?: string;
+  shippingPhone?: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
   trackingNumber?: string;
+  carrier?: string;
+  adminNotes?: string;
 }
 
 export interface OrderItemDto {
@@ -116,4 +146,32 @@ export interface CreateOrderDto {
   shippingAddressId: string;
   billingAddressId: string;
   customerNotes?: string;
+}
+
+export interface UpdateOrderStatusDto {
+  status: OrderStatus;
+}
+
+export interface UpdateTrackingInfoDto {
+  trackingNumber: string;
+  carrier: string;
+}
+
+export interface ProductImageDto {
+  id: string;
+  productId: string;
+  blobName: string;
+  fileName: string;
+  contentType: string;
+  sizeInBytes: number;
+  url: string;
+  displayOrder: number;
+  isPrimary: boolean;
+}
+
+export interface UploadProductImageDto {
+  productId: string;
+  fileName: string;
+  contentType: string;
+  content: string; // Base64 encoded
 }

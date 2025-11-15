@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Delivered</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header .icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .order-info {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .order-info p {
+            margin: 5px 0;
+        }
+        .success-box {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .success-box h3 {
+            margin-top: 0;
+            color: #28a745;
+            font-size: 24px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #28a745;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px 5px;
+        }
+        .button.secondary {
+            background: #667eea;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .review-section {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .review-section h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        .star-rating {
+            font-size: 30px;
+            color: #ffc107;
+            margin: 10px 0;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            .content {
+                padding: 20px;
+            }
+            .button {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">🎉</div>
+            <h1>Your Order Has Been Delivered!</h1>
+            <p>Delivered on {{DeliveredDate}}</p>
+        </div>
+
+        <div class="content">
+            <p>Hi {{CustomerName}},</p>
+
+            <div class="success-box">
+                <h3>✓ Delivery Confirmed</h3>
+                <p style="margin: 10px 0;">Your order has been successfully delivered. We hope you love your purchase!</p>
+            </div>
+
+            <div class="order-info">
+                <p><strong>Order Number:</strong> {{OrderNumber}}</p>
+                <p><strong>Total Amount:</strong> {{TotalAmount}}</p>
+                <p><strong>Delivered On:</strong> {{DeliveredDate}}</p>
+            </div>
+
+            <p>We hope you're thrilled with your purchase! If you have any issues or concerns with your order, please don't hesitate to reach out to our customer support team within 30 days.</p>
+
+            <div class="review-section">
+                <h3>⭐ We'd Love Your Feedback!</h3>
+                <p>Your opinion matters to us! Please take a moment to share your experience with this purchase. Your review helps us improve and assists other customers in making informed decisions.</p>
+                <div class="star-rating">★ ★ ★ ★ ★</div>
+            </div>
+
+            <center>
+                <a href="#" class="button">Leave a Review</a>
+                <a href="#" class="button secondary">View Order Details</a>
+            </center>
+
+            <p style="margin-top: 30px;">Thank you for choosing Masroof E-Commerce. We appreciate your business and look forward to serving you again!</p>
+
+            <p style="background: #e7f3ff; padding: 15px; border-radius: 4px; margin-top: 20px;">
+                <strong>💡 Did you know?</strong> As a valued customer, you have access to exclusive deals and early access to new products. Check out our latest offerings!
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Masroof E-Commerce. All rights reserved.</p>
+            <p>You're receiving this email because your order has been delivered.</p>
+            <p style="margin-top: 10px;">
+                <a href="#" style="color: #667eea; text-decoration: none;">Shop Again</a> |
+                <a href="#" style="color: #667eea; text-decoration: none;">Customer Support</a> |
+                <a href="#" style="color: #667eea; text-decoration: none;">My Account</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

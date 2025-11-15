@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .order-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .order-info p {
+            margin: 5px 0;
+        }
+        .order-items {
+            margin: 20px 0;
+        }
+        .order-items table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-items th {
+            background: #f8f9fa;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .order-items td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .totals {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+        .totals-row.total {
+            font-weight: bold;
+            font-size: 18px;
+            color: #667eea;
+            border-top: 2px solid #667eea;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+        .shipping-address {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .shipping-address h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✓ Order Confirmed</h1>
+            <p>Thank you for your order!</p>
+        </div>
+
+        <div class="content">
+            <p>Hi {{CustomerName}},</p>
+
+            <p>Thank you for shopping with Masroof E-Commerce! We're excited to confirm that we've received your order and are processing it now.</p>
+
+            <div class="order-info">
+                <p><strong>Order Number:</strong> {{OrderNumber}}</p>
+                <p><strong>Order Date:</strong> {{OrderDate}}</p>
+            </div>
+
+            <div class="order-items">
+                <h3>Order Details</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th style="text-align: center;">Quantity</th>
+                            <th style="text-align: right;">Price</th>
+                            <th style="text-align: right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{OrderItems}}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="totals">
+                <div class="totals-row">
+                    <span>Subtotal:</span>
+                    <span>{{SubTotal}}</span>
+                </div>
+                <div class="totals-row">
+                    <span>Discount:</span>
+                    <span>{{Discount}}</span>
+                </div>
+                <div class="totals-row">
+                    <span>Shipping:</span>
+                    <span>{{ShippingCost}}</span>
+                </div>
+                <div class="totals-row">
+                    <span>Tax:</span>
+                    <span>{{Tax}}</span>
+                </div>
+                <div class="totals-row total">
+                    <span>Total:</span>
+                    <span>{{TotalAmount}}</span>
+                </div>
+            </div>
+
+            <div class="shipping-address">
+                <h3>Shipping Address</h3>
+                <p>{{ShippingAddress}}</p>
+            </div>
+
+            <p>We'll send you another email when your order ships. If you have any questions, please don't hesitate to contact our customer support team.</p>
+
+            <center>
+                <a href="#" class="button">Track Your Order</a>
+            </center>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Masroof E-Commerce. All rights reserved.</p>
+            <p>You're receiving this email because you placed an order on our website.</p>
+        </div>
+    </div>
+</body>
+</html>

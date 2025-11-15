@@ -68,7 +68,7 @@ public class OrderPaymentService : ApplicationService
         createDto.ExtraProperties.Add("OrderNumber", order.OrderNumber);
         createDto.ExtraProperties.Add("CustomerId", order.CustomerId.ToString());
 
-        var paymentRequest = await _paymentRequestAppService.CreateAsync(createDto);
+        PaymentRequestDto paymentRequest = await _paymentRequestAppService.CreateAsync(createDto);
 
         return paymentRequest;
     }

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, permissionGuard } from '@abp/ng.core';
+import { EcommercePermissions } from '../proxy/permissions/ecommerce-permissions';
 
 export const ecommerceRoutes: Routes = [
   {
@@ -46,7 +47,7 @@ export const ecommerceRoutes: Routes = [
       import('./admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
     canActivate: [authGuard, permissionGuard],
     data: {
-      requiredPolicy: 'Ecommerce.Dashboard.Host',
+      requiredPolicy: EcommercePermissions.Dashboard.Host,
     },
   },
   {
@@ -55,7 +56,7 @@ export const ecommerceRoutes: Routes = [
       import('./admin-products/admin-products.component').then(m => m.AdminProductsComponent),
     canActivate: [authGuard, permissionGuard],
     data: {
-      requiredPolicy: 'Ecommerce.Products',
+      requiredPolicy: EcommercePermissions.Products.Default,
     },
   },
   {
@@ -64,7 +65,7 @@ export const ecommerceRoutes: Routes = [
       import('./admin-categories/admin-categories.component').then(m => m.AdminCategoriesComponent),
     canActivate: [authGuard, permissionGuard],
     data: {
-      requiredPolicy: 'Ecommerce.Categories',
+      requiredPolicy: EcommercePermissions.Categories.Default,
     },
   },
   {
@@ -73,7 +74,7 @@ export const ecommerceRoutes: Routes = [
       import('./admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent),
     canActivate: [authGuard, permissionGuard],
     data: {
-      requiredPolicy: 'Ecommerce.Orders',
+      requiredPolicy: EcommercePermissions.Orders.Default,
     },
   },
   {
@@ -82,7 +83,7 @@ export const ecommerceRoutes: Routes = [
       import('./coupon-management/coupon-management.component').then(m => m.CouponManagementComponent),
     canActivate: [authGuard, permissionGuard],
     data: {
-      requiredPolicy: 'Ecommerce.Coupons',
+      requiredPolicy: EcommercePermissions.Coupons.Default,
     },
   },
   {

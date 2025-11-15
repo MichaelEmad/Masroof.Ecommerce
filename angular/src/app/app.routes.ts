@@ -17,17 +17,15 @@ export const APP_ROUTES: Routes = [
     children: [
       {
         path: 'login',
-        redirectTo: '/ecommerce/login',
-        pathMatch: 'full',
+        loadComponent: () => import('./ecommerce/login/login.component').then(c => c.LoginComponent),
       },
       {
         path: 'register',
-        redirectTo: '/ecommerce/register',
-        pathMatch: 'full',
+        loadComponent: () => import('./ecommerce/register/register.component').then(c => c.RegisterComponent),
       },
       {
         path: '',
-        redirectTo: '/ecommerce/login',
+        redirectTo: 'login',
         pathMatch: 'full',
       },
     ],

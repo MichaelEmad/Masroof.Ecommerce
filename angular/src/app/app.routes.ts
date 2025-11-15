@@ -14,7 +14,23 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: 'account',
-    loadChildren: () => import('@volo/abp.ng.account/public').then(c => c.createRoutes()),
+    children: [
+      {
+        path: 'login',
+        redirectTo: '/ecommerce/login',
+        pathMatch: 'full',
+      },
+      {
+        path: 'register',
+        redirectTo: '/ecommerce/register',
+        pathMatch: 'full',
+      },
+      {
+        path: '',
+        redirectTo: '/ecommerce/login',
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: 'identity',

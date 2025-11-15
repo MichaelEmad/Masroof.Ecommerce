@@ -2,7 +2,7 @@ namespace Masroof.Ecommerce.Addresses;
 
 public enum AddressType
 {
-    Shipping = 1,
-    Billing = 2,
-    Both = 3
+    Shipping = 0,
+    Billing = 1,
+    Both = 2
 }
